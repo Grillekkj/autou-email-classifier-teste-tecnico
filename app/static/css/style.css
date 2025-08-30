@@ -1,0 +1,328 @@
+/* src/static/css/style.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
+:root {
+  --primary-color: #4a55a2;
+  --secondary-color: #7895cb;
+  --background-color: #f0f2f5;
+  --card-background: #ffffff;
+  --text-color: #333;
+  --light-text-color: #666;
+  --border-color: #e0e0e0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.container {
+  background-color: var(--card-background);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 750px;
+  text-align: center;
+}
+
+header h1 {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: var(--light-text-color);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+#email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+textarea#email-text {
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  resize: vertical;
+  box-sizing: border-box;
+  min-height: 150px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+textarea#email-text:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(74, 85, 162, 0.2);
+}
+
+.separator {
+  font-weight: 500;
+  color: var(--light-text-color);
+}
+
+.file-upload-wrapper {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s;
+  position: relative;
+}
+
+.file-upload-wrapper:hover {
+  border-color: var(--primary-color);
+  background-color: #f9f9ff;
+}
+
+.file-upload-wrapper input[type="file"] {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-upload-label span {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.file-name-display {
+  display: block;
+  margin-top: 10px;
+  color: var(--light-text-color);
+  font-style: italic;
+}
+
+#analyze-button {
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white;
+  padding: 16px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+#analyze-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(74, 85, 162, 0.3);
+}
+
+#analyze-button:disabled {
+  background: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-spinner {
+  margin: 30px auto;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.results-box {
+  margin-top: 30px;
+  padding: 25px;
+  background-color: #f9faff;
+  border-left: 5px solid var(--primary-color);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.results-header h3 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.response-text {
+  background-color: var(--card-background);
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.summary-text {
+  font-style: italic;
+  color: #555;
+}
+
+.history-container {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.history-container h2 {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.history-item {
+  background-color: #fdfdff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.history-item-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9faff;
+}
+
+.history-item-header-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.history-item-header-text strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-item-content {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: #fff;
+}
+
+.history-item-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: #f7f7f7;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.history-item-content hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 15px 0;
+}
+
+.toggle-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.file-type-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 12px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+footer {
+  margin-top: 40px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+  .container {
+    padding: 20px;
+  }
+}
+
+.count-badge {
+  background-color: #38a169 !important; /* Um verde para diferenciar */
+}
+
+.history-item-zip .history-item-header {
+  background-color: #e6f4ff; /* Um azul claro para destacar o grupo */
+}
+
+.history-item-inner {
+  border: 1px solid #d1e2ff;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #fdfdff;
+}
+
+.history-item-inner:last-child {
+  margin-bottom: 0;
+}
+
+.history-item-zip .history-item-content {
+  background-color: #f0f5ff; /* Fundo um pouco mais escuro para o conteúdo do zip */
+}
+
+.history-item-inner .history-item-header-text strong {
+  color: var(--primary-color);
+}

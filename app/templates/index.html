@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoU - Classificador de Emails</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Analisador de Emails com IA</h1>
+      <p>
+        Cole o texto do seu email na caixa abaixo ou faça o upload de um ou mais arquivos
+        nos formatos .txt, .pdf, .eml ou um arquivo .zip.
+      </p>
+    </header>
+
+    <main>
+      <form id="email-form">
+        <textarea id="email-text" rows="10" placeholder="Digite ou cole o texto do email aqui..."></textarea>
+        <div class="separator">ou</div>
+        <div class="file-upload-wrapper">
+          <input type="file" id="email-file" name="email_file" accept=".txt,.pdf,.eml,.zip" multiple>
+          <label for="email-file" class="file-upload-label">
+            <span>Escolher Arquivo(s)</span>
+          </label>
+          <span id="file-name" class="file-name-display">Nenhum arquivo selecionado</span>
+        </div>
+        <button type="submit" id="analyze-button">Analisar</button>
+      </form>
+
+      <div id="loading" class="loading-spinner" style="display: none;"></div>
+
+      <div id="results" style="display: none;">
+        <h2>Resultado da Análise</h2>
+        <div id="results-content">
+        </div>
+      </div>
+
+      <section id="history-section" class="history-container" style="display: none;">
+        <h2>Histórico de Análises</h2>
+        <div id="history-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Desafio Prático AutoU</p>
+    </footer>
+  </div>
+
+  <script>
+    const initialHistory = {{ historico | tojson | safe }};
+  </script>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
