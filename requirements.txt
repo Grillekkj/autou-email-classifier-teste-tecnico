@@ -1,0 +1,9 @@
+Flask
+transformers
+torch
+nltk
+spacy
+google-generativeai
+python-dotenv
+PyMuPDF
+extract-msg
