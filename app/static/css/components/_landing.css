@@ -1,0 +1,212 @@
+.landing-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.landing-header h1 {
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.landing-header .subtitle {
+  color: var(--light-text-color);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.landing-main {
+  padding-top: 20px;
+}
+
+.tutorial {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+.tutorial-step {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.tutorial-step.reverse {
+  flex-direction: row-reverse;
+}
+
+.tutorial-text {
+  flex: 1;
+}
+
+.tutorial-text h3 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.tutorial-text p,
+.tutorial-text ul {
+  line-height: 1.7;
+  color: var(--light-text-color);
+}
+
+.tutorial-text ul {
+  padding-left: 20px;
+  margin-top: 15px;
+}
+
+.tutorial-image {
+  flex: 0 0 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.file-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.file-badge {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.note {
+  font-size: 0.9em;
+  color: var(--light-text-color);
+  border-left: 3px solid var(--border-color);
+  padding-left: 15px;
+  margin-top: 20px;
+}
+
+.mock-navbar {
+  display: flex;
+  gap: 10px;
+  background-color: var(--card-background);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mock-nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  width: 110px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-color);
+}
+
+.mock-nav-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.mock-analysis {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mock-analysis h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.mock-analysis .category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  text-transform: uppercase;
+  color: white;
+}
+
+.mock-analysis .category-badge-produtivo {
+  background-color: #28a745;
+}
+
+.mock-analysis .response-text {
+  background-color: var(--background-color);
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  white-space: pre-wrap;
+  font-size: 0.9em;
+  border-left: 3px solid var(--primary-color);
+  color: var(--light-text-color);
+}
+
+.mock-settings {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.mock-settings h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.mock-setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mock-setting-item label {
+  font-size: 0.9em;
+  color: var(--light-text-color);
+}
+
+.mock-setting-item input,
+.mock-setting-item select,
+.mock-setting-item textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  font-size: 0.9em;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  resize: none;
+}
+
+@media (max-width: 768px) {
+  .tutorial-step,
+  .tutorial-step.reverse {
+    flex-direction: column;
+  }
+  .tutorial-image {
+    width: 100%;
+    flex-basis: auto;
+    margin-top: 20px;
+  }
+}
+
