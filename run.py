@@ -2,6 +2,7 @@ import subprocess
 import spacy
 import nltk
 import sys
+import os
 
 from app import create_app
 
@@ -21,22 +22,27 @@ def setup_downloads():
     except OSError:
         print("Modelo pt_core_news_sm não encontrado. Instalando...")
         subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "spacy",
-                "download",
-                "pt_core_news_sm",
-            ]
+            [sys.executable, "-m", "spacy", "download", "pt_core_news_sm"]
         )
         print("Modelo pt_core_news_sm instalado com sucesso!")
 
     print("\nSetup concluído! Ambiente pronto para rodar o projeto.")
 
+
 if __name__ == "__main__":
     if "--setup" in sys.argv:
         setup_downloads()
 
-    print("\nIniciando a aplicação Flask...")
-    app = create_app()
-    app.run(debug=True)
+    if "--prod" in sys.argv:
+        port = os.environ.get("PORT", "5000")
+        print(f"Iniciando aplicação em produção com Gunicorn na porta {port}...")
+        subprocess.run([
+            sys.executable, "-m", "gunicorn",
+            "-w", "4",
+            "-b", f"0.0.0.0:{port}",
+            "app:create_app()"
+        ])
+    else:
+        print("\nIniciando a aplicação Flask em desenvolvimento...")
+        app = create_app()
+        app.run(debug=True)
