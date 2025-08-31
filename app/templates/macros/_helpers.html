@@ -1,0 +1,13 @@
+{% macro nav_button(id, href, data_page, icon_file, alt_text, button_text, is_link=false) %}
+{% if is_link %}
+<a href="{{ href }}" class="nav-item nav-button" data-page="{{ data_page }}">
+  <img src="{{ url_for('static', filename='images/' ~ icon_file) }}" alt="{{ alt_text }}" class="nav-icon">
+  <span class="nav-text">{{ button_text }}</span>
+</a>
+{% else %}
+<button id="{{ id }}" class="nav-item nav-button">
+  <img src="{{ url_for('static', filename='images/' ~ icon_file) }}" alt="{{ alt_text }}" class="nav-icon">
+  <span class="nav-text">{{ button_text }}</span>
+</button>
+{% endif %}
+{% endmacro %}

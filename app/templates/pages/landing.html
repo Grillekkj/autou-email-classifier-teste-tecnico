@@ -1,0 +1,120 @@
+<header class="landing-header">
+  <h1>Bem-vindo ao InboxFlow da AutoU</h1>
+  <p class="subtitle">
+    Seu novo assistente de e-mails inteligente. Siga o guia interativo para começar a usar.
+  </p>
+</header>
+<main class="landing-main">
+  <div class="tutorial">
+
+    <div class="tutorial-step">
+      <div class="tutorial-text">
+        <h3>O Que o InboxFlow Faz?</h3>
+        <p>
+          O <strong>InboxFlow</strong>, um produto da <strong>AutoU</strong>, simplifica sua caixa de entrada. Nossa
+          ferramenta analisa seus e-mails para gerar resumos, classificá-los como produtivos ou improdutivos e sugerir
+          respostas inteligentes, economizando seu tempo.
+        </p>
+      </div>
+      <div class="tutorial-image">
+        <img src="{{ url_for('static', filename='images/autou_logo.jpeg') }}" alt="AutoU Logo"
+          style="width: 150px; border-radius: 10px;">
+      </div>
+    </div>
+
+    <div class="tutorial-step reverse">
+      <div class="tutorial-text">
+        <h3>Como Usar? É Simples!</h3>
+        <p><strong>1. Escolha uma opção na barra de navegação acima:</strong></p>
+        <ul>
+          <li>
+            <strong>Analisar por Texto:</strong> Clique para abrir uma janela e colar o conteúdo do seu e-mail.
+          </li>
+          <li>
+            <strong>Analisar por Arquivo:</strong> Clique para fazer o upload de um ou mais arquivos de e-mail do seu
+            computador.
+          </li>
+        </ul>
+        <p>Após a análise, o resultado aparecerá aqui e o item será salvo no seu histórico à esquerda.</p>
+      </div>
+      <div class="tutorial-image">
+        <div class="mock-navbar">
+          <div class="mock-nav-button">
+            <img src="{{ url_for('static', filename='images/add_copied_email_or_write.svg') }}"
+              alt="Analisar por Texto">
+            <span>Analisar por Texto</span>
+          </div>
+          <div class="mock-nav-button">
+            <img src="{{ url_for('static', filename='images/upload_email_files.svg') }}" alt="Analisar por Arquivo">
+            <span>Analisar por Arquivo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-step">
+      <div class="tutorial-text">
+        <h3>Quais Arquivos o InboxFlow Aceita?</h3>
+        <p>Nossa plataforma é compatível com os formatos de e-mail mais comuns. Você pode enviar arquivos:</p>
+        <div class="file-types">
+          <span class="file-badge">.TXT</span>
+          <span class="file-badge">.PDF</span>
+          <span class="file-badge">.EML</span>
+          <span class="file-badge">.MSG</span>
+          <span class="file-badge">.ZIP</span>
+        </div>
+        <p class="note">
+          <strong>Dica:</strong> Você pode enviar um arquivo <code>.zip</code> contendo múltiplos e-mails para
+          analisá-los todos de uma só vez!
+        </p>
+      </div>
+      <div class="tutorial-image">
+        <div class="mock-analysis">
+          <h4>Assunto do E-mail</h4>
+          <span class="category-badge category-badge-produtivo">Produtivo</span>
+          <p>Este é um resumo do e-mail, mostrando o ponto principal e a necessidade do remetente...</p>
+          <pre class="response-text">Esta seria a resposta sugerida pela IA...</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-step reverse">
+      <div class="tutorial-text">
+        <h3>Personalize sua Experiência</h3>
+        <p>
+          Acesse a tela de <strong>Configurações</strong> na barra de navegação para ajustar o comportamento da IA. Você
+          pode:
+        </p>
+        <ul>
+          <li>Definir uma saudação e assinatura padrão para todas as respostas.</li>
+          <li>Escolher modelos de IA diferentes para cada tipo de tarefa (resumo, classificação, etc.).</li>
+          <li>Personalizar os prompts que a IA usa para gerar as respostas.</li>
+        </ul>
+        <p class="note">
+          <strong>Atenção:</strong> Ao editar os prompts, é crucial manter a estrutura de saída solicitada (como o
+          formato JSON para respostas), pois alterações incorretas podem afetar o funcionamento da plataforma.
+        </p>
+      </div>
+      <div class="tutorial-image">
+        <div class="mock-settings">
+          <h4>Configurações</h4>
+          <div class="mock-setting-item">
+            <label for="saudacao-padrao">Saudação Padrão</label>
+            <input type="text" id="saudacao-padrao" value="Prezado(a)," disabled />
+          </div>
+          <div class="mock-setting-item">
+            <label for="modelo-ia-resumo">Modelo de IA para Resumo</label>
+            <select id="modelo-ia-resumo" disabled>
+              <option>Gemini 1.5 Flash</option>
+            </select>
+          </div>
+          <div class="mock-setting-item">
+            <label for="prompt-resposta">Prompt de Resposta</label>
+            <textarea id="prompt-resposta" disabled rows="3">Você é um assistente de e-mails...</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>

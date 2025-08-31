@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InboxFlow</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/autou_logo.jpeg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+
+<body>
+
+  <div id="global-loading-overlay" style="display: none;">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <input type="file" id="global-file-input" accept=".txt,.pdf,.eml,.msg,.zip" multiple style="display: none;" />
+
+  {% block body_content %}
+  {% endblock %}
+
+  {% block modals %}
+  {% endblock %}
+
+  <script>
+    const initialHistory = {{ historico | tojson }};
+  </script>
+
+  {% block scripts %}
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% endblock %}
+</body>
+
+</html>

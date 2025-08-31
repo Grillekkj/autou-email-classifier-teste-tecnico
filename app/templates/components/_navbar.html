@@ -1,0 +1,32 @@
+{% from "macros/_helpers.html" import nav_button %}
+
+<nav class="tools-navbar">
+  <div class="nav-actions">
+    <button id="menu-toggle-btn" class="menu-toggle-btn">
+      <img src="{{ url_for('static', filename='images/menu_icon.svg') }}" alt="Menu" class="nav-icon">
+    </button>
+
+    {{ nav_button(id=None, href='#', data_page='/write', icon_file='generate_new_email.svg', alt_text='Escrever E-mail',
+    button_text='Escrever E-mail', is_link=true) }}
+
+    {{ nav_button(id='open-text-modal-btn', href=None, data_page=None, icon_file='add_copied_email_or_write.svg',
+    alt_text='Analisar por Texto', button_text='Analisar por Texto') }}
+
+    {{ nav_button(id='upload-file-btn', href=None, data_page=None, icon_file='upload_email_files.svg',
+    alt_text='Analisar por Arquivo', button_text='Analisar por Arquivo') }}
+
+    {{ nav_button(id=None, href='#', data_page='/settings', icon_file='settings.svg', alt_text='Configurações',
+    button_text='Configurações', is_link=true) }}
+
+    <button id="theme-toggle" class="nav-button">
+      <img src="{{ url_for('static', filename='images/change_theme.svg') }}" alt="Mudar Tema" class="nav-icon">
+      <span id="theme-text" class="nav-text">Mudar Tema</span>
+    </button>
+  </div>
+
+  <div class="nav-brand">
+    <a href="/">
+      <img src="{{ url_for('static', filename='images/autou_logo.jpeg') }}" alt="AutoU Logo" class="logo-img">
+    </a>
+  </div>
+</nav>

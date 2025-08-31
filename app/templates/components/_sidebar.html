@@ -1,0 +1,38 @@
+<aside class="history-sidebar" id="history-sidebar">
+</aside>
+
+<template id="history-item-template">
+  <div class="history-item-preview">
+    <button class="delete-history-btn" title="Excluir item">
+      <img src="/static/images/delete_icon.svg" alt="Excluir">
+    </button>
+    <div class="history-item-line-1">
+      <h4 class="history-item-subject">Email Subject</h4>
+      <span class="history-item-timestamp"></span>
+    </div>
+    <div class="history-badges">
+      <span class="category-badge"></span>
+      <span class="file-type-badge"></span>
+    </div>
+    <p class="history-item-summary"></p>
+  </div>
+</template>
+
+<template id="zip-container-template">
+  <div class="history-item-zip-container">
+    <div class="history-item-preview history-item-zip-header">
+      <button class="delete-history-btn" title="Excluir ZIP completo">
+        <img src="/static/images/delete_icon.svg" alt="Excluir">
+      </button>
+      <div class="history-item-line-1">
+        <h4 class="zip-title history-item-subject">ZIP File</h4>
+        <span class="history-item-timestamp"></span>
+      </div>
+      <div class="history-badges">
+        <span class="file-type-badge">zip</span>
+      </div>
+      <p class="history-item-summary"></p>
+    </div>
+    <div class="zip-file-list" style="display: none;"></div>
+  </div>
+</template>
