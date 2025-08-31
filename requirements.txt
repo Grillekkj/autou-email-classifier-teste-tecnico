@@ -6,3 +6,4 @@ python-dotenv
 PyMuPDF
 extract-msg
 striprtf
+gunicorn
