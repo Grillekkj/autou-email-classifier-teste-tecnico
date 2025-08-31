@@ -1,0 +1,116 @@
+.content-panel {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background-color: var(--background-color);
+}
+
+.analysis-header {
+  margin-bottom: 25px;
+}
+
+.analysis-title-line {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.analysis-header h1 {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-badges {
+  display: flex;
+  gap: 10px;
+}
+
+.analysis-summary {
+  color: var(--light-text-color);
+  margin-top: 10px;
+  margin-bottom: 0;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.content-panel > header h1 {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.content-panel > header p {
+  color: var(--light-text-color);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.text-view-wrapper {
+  position: relative;
+  margin-top: 20px;
+}
+
+.response-text,
+pre.response-text {
+  background-color: var(--card-background);
+  padding: 15px;
+  padding-top: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary-color);
+  white-space: pre-wrap;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.file-type-badge,
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  text-transform: uppercase;
+  color: white;
+}
+.category-badge-produtivo {
+  background-color: #28a745;
+}
+.category-badge-improdutivo {
+  background-color: #dc3545;
+}
+.file-type-badge {
+  background-color: var(--secondary-color);
+}
+
+.text-view-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.icon-btn {
+  background-color: transparent;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.icon-btn img {
+  width: 20px;
+  height: 20px;
+}
+
