@@ -3,196 +3,180 @@ import { initializeSettingsPage } from "./modules/settings.js";
 import * as historyUI from "./modules/ui/history.js";
 import * as contentUI from "./modules/ui/content.js";
 import * as stateUI from "./modules/ui/state.js";
-import * as events from "./modules/events.js";
+import * as domEvents from "./modules/events.js";
+import { appState } from "./modules/appState.js";
 import { eventBus } from "./core/eventBus.js";
-import {
-  fetchPageContent,
-  deleteHistoryItem,
-  getHistory,
-} from "./modules/api.js";
+import * as api from "./modules/api.js";
 
-document.addEventListener("DOMContentLoaded", function () {
-  const appState = {
-    currentHistory: [],
-    activeItemId: { historyId: null, subId: null },
-  };
+async function loadPage(url) {
+  stateUI.setActiveItem(null);
+  appState.clearActiveItem();
 
-  async function loadInitialHistory() {
-    stateUI.setLoading(true);
-    const data = await getHistory();
-    stateUI.setLoading(false);
-    if (data?.historico) {
-      appState.currentHistory = data.historico;
-      eventBus.emit("historyUpdated", appState.currentHistory);
-    }
+  const content = await api.fetchPageContent(url);
+  eventBus.emit("contentUpdated", content);
+
+  if (url.includes("/settings")) {
+    initializeSettingsPage();
+  }
+}
+
+async function loadInitialHistory() {
+  stateUI.setLoading(true);
+  const data = await api.getHistory();
+  stateUI.setLoading(false);
+
+  if (data?.historico) {
+    appState.setHistory(data.historico);
+    eventBus.emit("historyUpdated", appState.getHistory());
+  }
+}
+
+function handleHistorySelection({ historyId, subId, element }) {
+  if (element?.classList.contains("history-item-zip-container")) {
+    loadPage("/landing");
+    stateUI.setActiveItem(element);
+    return;
   }
 
-  async function loadPage(url) {
-    stateUI.setActiveItem(null);
-    const content = await fetchPageContent(url);
-    eventBus.emit("contentUpdated", content);
+  appState.setActiveItemId(historyId, subId);
+  const itemData = appState.findItem(historyId, subId);
 
-    if (url.includes("/settings")) {
-      initializeSettingsPage();
-    }
+  if (itemData) {
+    eventBus.emit("analysisResultLoaded", { ...itemData, historyId, subId });
+    stateUI.setActiveItem(element);
+  }
+}
+
+function selectFirstHistoryItem(newHistory) {
+  const newResult = newHistory[0];
+  if (!newResult) {
+    loadPage("/landing");
+    return;
   }
 
-  function handleAnalysisComplete(data) {
-    appState.currentHistory = data.historico;
-    eventBus.emit("historyUpdated", appState.currentHistory);
+  let itemToSelect;
+  let historyId = 0;
+  let subId = null;
 
-    const newResult = appState.currentHistory[0];
-    let itemToSelect = null;
+  if (newResult.is_zip && newResult.arquivos_internos.length > 0) {
+    const zipContainer = document.querySelector(
+      `.history-item-zip-container[data-history-id="0"]`
+    );
+    if (zipContainer && !zipContainer.classList.contains("expanded")) {
+      zipContainer.classList.add("expanded");
+      zipContainer.querySelector(".zip-file-list").style.display = "flex";
+    }
+    itemToSelect = zipContainer?.querySelector(
+      `.history-item-preview[data-sub-id="0"]`
+    );
+    subId = 0;
+  } else {
+    itemToSelect = document.querySelector(
+      `.history-item-preview[data-history-id="0"]`
+    );
+  }
 
-    if (newResult?.is_zip && newResult.arquivos_internos.length > 0) {
-      const zipContainer = document.querySelector(
-        `.history-item-zip-container .history-item-zip-header[data-history-id="0"]`
-      ).parentElement;
-      itemToSelect = zipContainer.querySelector(
-        `.history-item-preview[data-sub-id="0"]`
+  if (itemToSelect) {
+    eventBus.emit("historyItemSelected", {
+      historyId,
+      subId,
+      element: itemToSelect,
+    });
+  } else {
+    loadPage("/landing");
+  }
+}
+
+function handleAnalysisComplete(data) {
+  appState.setHistory(data.historico);
+  eventBus.emit("historyUpdated", appState.getHistory());
+
+  requestAnimationFrame(() => {
+    selectFirstHistoryItem(data.historico);
+  });
+}
+
+function handlePostDeletionUI(oldHistoryId, oldSubId) {
+  if (oldSubId === null) {
+    loadPage("/landing");
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const zipContainer = document.querySelector(
+      `.history-item-zip-container[data-history-id="${oldHistoryId}"]`
+    );
+
+    if (zipContainer) {
+      const firstItem = zipContainer.querySelector(
+        '.history-item-preview[data-sub-id="0"]'
       );
-
-      if (zipContainer && !zipContainer.classList.contains("expanded")) {
-        zipContainer.classList.add("expanded");
-        zipContainer.querySelector(".zip-file-list").style.display = "flex";
+      if (firstItem) {
+        if (!zipContainer.classList.contains("expanded")) {
+          zipContainer.classList.add("expanded");
+          zipContainer.querySelector(".zip-file-list").style.display = "flex";
+        }
+        eventBus.emit("historyItemSelected", {
+          historyId: parseInt(firstItem.dataset.historyId, 10),
+          subId: parseInt(firstItem.dataset.subId, 10),
+          element: firstItem,
+        });
       }
-    } else if (newResult) {
-      itemToSelect = document.querySelector(
-        `.history-item-preview[data-history-id="0"]`
-      );
-    }
-
-    if (itemToSelect) {
-      const historyId = parseInt(itemToSelect.dataset.historyId, 10);
-      const subId = itemToSelect.dataset.subId
-        ? parseInt(itemToSelect.dataset.subId, 10)
-        : null;
-      eventBus.emit("historyItemSelected", {
-        historyId,
-        subId,
-        element: itemToSelect,
-      });
     } else {
       loadPage("/landing");
     }
+  });
+}
+
+async function handleDeleteRequest({ historyId, subId }) {
+  const confirmed = await showConfirmationModal(
+    "Confirmar Exclusão",
+    "Tem certeza de que deseja excluir este item?"
+  );
+  if (!confirmed) return;
+
+  stateUI.setLoading(true);
+  const result = await api.deleteHistoryItem(historyId, subId);
+  stateUI.setLoading(false);
+
+  if (result) {
+    const wasActive =
+      appState.getActiveItemId().historyId === historyId &&
+      appState.getActiveItemId().subId === subId;
+
+    appState.setHistory(result.historico);
+    eventBus.emit("historyUpdated", appState.getHistory());
+
+    if (wasActive) {
+      handlePostDeletionUI(historyId, subId);
+    }
   }
+}
 
-  eventBus.on("navigate", (url) => {
-    loadPage(url);
-  });
+function registerEventListeners() {
+  eventBus.on("navigate", loadPage);
+  eventBus.on("historyItemSelected", handleHistorySelection);
+  eventBus.on("historyItemUnselected", () => loadPage("/landing"));
+  eventBus.on("responseRegenerated", ({ newResponse }) =>
+    appState.updateItemResponse(newResponse)
+  );
+  eventBus.on("deleteHistoryRequested", handleDeleteRequest);
+}
 
-  eventBus.on("historyItemSelected", ({ historyId, subId, element }) => {
-    if (element?.classList.contains("history-item-zip-container")) {
-      loadPage("/landing");
-      stateUI.setActiveItem(element);
-      return;
-    }
+async function init() {
+  historyUI.init();
+  contentUI.init();
 
-    appState.activeItemId = { historyId, subId };
-    const itemData =
-      subId !== null
-        ? appState.currentHistory[historyId].arquivos_internos[subId]
-        : appState.currentHistory[historyId];
+  domEvents.setupNavigation((url) => eventBus.emit("navigate", url));
+  domEvents.initializeModal(handleAnalysisComplete);
+  domEvents.initializeFileUploadButton(handleAnalysisComplete);
+  domEvents.setupSidebarToggle();
 
-    eventBus.emit("analysisResultLoaded", { ...itemData, historyId, subId });
-    stateUI.setActiveItem(element);
-  });
+  registerEventListeners();
 
-  eventBus.on("responseRegenerated", ({ newResponse }) => {
-    const { historyId, subId } = appState.activeItemId;
+  await loadInitialHistory();
+  loadPage("/landing");
+}
 
-    if (historyId !== null) {
-      let itemToUpdate;
-      if (subId !== null) {
-        itemToUpdate =
-          appState.currentHistory[historyId].arquivos_internos[subId];
-      } else {
-        itemToUpdate = appState.currentHistory[historyId];
-      }
-
-      if (itemToUpdate) {
-        itemToUpdate.resposta_sugerida = newResponse;
-      }
-    }
-  });
-
-  eventBus.on("historyItemUnselected", () => {
-    loadPage("/landing");
-    stateUI.setActiveItem(null);
-  });
-
-  eventBus.on("deleteHistoryRequested", async ({ historyId, subId }) => {
-    const confirmed = await showConfirmationModal(
-      "Confirmar Exclusão",
-      "Tem certeza de que deseja excluir este item?"
-    );
-    if (!confirmed) return;
-
-    stateUI.setLoading(true);
-    const result = await deleteHistoryItem(historyId, subId);
-    stateUI.setLoading(false);
-
-    if (result) {
-      const wasActiveItemDeleted =
-        appState.activeItemId.historyId === historyId &&
-        appState.activeItemId.subId === subId;
-
-      appState.currentHistory = result.historico;
-      eventBus.emit("historyUpdated", appState.currentHistory);
-
-      setTimeout(() => {
-        if (wasActiveItemDeleted) {
-          if (subId !== null) {
-            const zipContainer = document.querySelector(
-              `.history-item-zip-container .history-item-zip-header[data-history-id="${historyId}"]`
-            );
-
-            if (zipContainer) {
-              const container = zipContainer.closest(
-                ".history-item-zip-container"
-              );
-              if (!container.classList.contains("expanded")) {
-                container.classList.add("expanded");
-                container.querySelector(".zip-file-list").style.display =
-                  "flex";
-              }
-
-              const firstItemElement = container.querySelector(
-                `.history-item-preview[data-sub-id="0"]`
-              );
-              if (firstItemElement) {
-                eventBus.emit("historyItemSelected", {
-                  historyId: historyId,
-                  subId: 0,
-                  element: firstItemElement,
-                });
-              }
-            } else {
-              loadPage("/landing");
-              appState.activeItemId = { historyId: null, subId: null };
-            }
-          } else {
-            loadPage("/landing");
-            appState.activeItemId = { historyId: null, subId: null };
-          }
-        }
-      }, 0);
-    }
-  });
-
-  async function init() {
-    historyUI.init(appState.currentHistory);
-    contentUI.init();
-
-    events.setupNavigation(loadPage);
-    events.initializeModal(handleAnalysisComplete);
-    events.initializeFileUploadButton(handleAnalysisComplete);
-    events.setupSidebarToggle();
-
-    await loadInitialHistory();
-    loadPage("/landing");
-  }
-
-  init();
-});
+document.addEventListener("DOMContentLoaded", init);
 
