@@ -2,24 +2,105 @@ import { eventBus } from "../../core/eventBus.js";
 
 const itemTemplate = document.getElementById("history-item-template");
 const zipTemplate = document.getElementById("zip-container-template");
-const historySidebar = document.getElementById("history-sidebar");
+const fileTypeFilter = document.getElementById("file-type-filter");
+const historyList = document.getElementById("history-list");
+
+const state = {
+  fullHistory: [],
+  searchQuery: "",
+  filters: {
+    category: null,
+    fileType: null,
+  },
+};
+
+function populateFileTypeFilter() {
+  const fileTypes = new Set();
+  state.fullHistory.forEach((item) => {
+    if (item.is_zip) {
+      item.arquivos_internos.forEach((sub) => fileTypes.add(sub.tipo_arquivo));
+    } else {
+      fileTypes.add(item.tipo_arquivo);
+    }
+  });
+
+  while (fileTypeFilter.options.length > 1) {
+    fileTypeFilter.remove(1);
+  }
+
+  [...fileTypes]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((type) => {
+      const option = new Option(type.toUpperCase(), type);
+      fileTypeFilter.add(option);
+    });
+}
+
+function applyFiltersAndRender() {
+  const query = state.searchQuery.toLowerCase().trim();
+  const { category, fileType } = state.filters;
+
+  let filteredHistory = state.fullHistory;
+
+  const itemMatchesFilters = (item) => {
+    const categoryMatch = !category || item.categoria === category;
+    const fileTypeMatch = !fileType || item.tipo_arquivo === fileType;
+    const textMatch =
+      !query ||
+      item.assunto.toLowerCase().includes(query) ||
+      (item.resumo || "").toLowerCase().includes(query);
+
+    return categoryMatch && fileTypeMatch && textMatch;
+  };
+
+  filteredHistory = filteredHistory
+    .map((item) => {
+      if (item.is_zip) {
+        const matchingChildren =
+          item.arquivos_internos.filter(itemMatchesFilters);
+        if (matchingChildren.length > 0) {
+          return { ...item, arquivos_internos_filtrados: matchingChildren };
+        }
+        return null;
+      }
+      return itemMatchesFilters(item) ? item : null;
+    })
+    .filter(Boolean);
+
+  render(filteredHistory);
+  updateFilterButtonsUI();
+}
+
+function updateFilterButtonsUI() {
+  const container = document.querySelector(".filter-container");
+  const buttons = container.querySelectorAll(".filter-btn:not(.clear-filters)");
+  const clearBtn = document.getElementById("clear-filters-btn");
+
+  buttons.forEach((btn) => {
+    btn.classList.toggle(
+      "active",
+      state.filters.category === btn.dataset.filterValue
+    );
+  });
+
+  fileTypeFilter.classList.toggle("active", !!state.filters.fileType);
+
+  const hasActiveFilter =
+    state.filters.category || state.filters.fileType || state.searchQuery;
+  clearBtn.style.display = hasActiveFilter ? "inline-block" : "none";
+}
 
 function createHistoryItemPreview(item, historyIndex, subIndex = null) {
   const clone = itemTemplate.content.cloneNode(true);
   const preview = clone.querySelector(".history-item-preview");
-
   preview.dataset.historyId = historyIndex;
-  if (subIndex !== null) {
-    preview.dataset.subId = subIndex;
-  }
+  if (subIndex !== null) preview.dataset.subId = subIndex;
 
-  const summary = item.resumo || "";
   preview.querySelector(".history-item-subject").textContent = item.assunto;
   preview.querySelector(".history-item-timestamp").textContent =
     item.timestamp || "";
   preview.querySelector(".history-item-summary").textContent =
-    summary.substring(0, 70) + (summary.length > 70 ? "..." : "");
-
+    (item.resumo || "").substring(0, 70) + "...";
   const categoryBadge = preview.querySelector(".category-badge");
   categoryBadge.textContent = item.categoria;
   categoryBadge.className = `category-badge category-badge-${item.categoria}`;
@@ -27,9 +108,7 @@ function createHistoryItemPreview(item, historyIndex, subIndex = null) {
 
   const deleteBtn = preview.querySelector(".delete-history-btn");
   deleteBtn.dataset.historyId = historyIndex;
-  if (subIndex !== null) {
-    deleteBtn.dataset.subId = subIndex;
-  }
+  if (subIndex !== null) deleteBtn.dataset.subId = subIndex;
 
   return preview;
 }
@@ -47,44 +126,54 @@ function createZipHistoryItem(item, historyIndex) {
     item.assunto;
   zipContainer.querySelector(".history-item-timestamp").textContent =
     item.timestamp;
+
+  const children = item.arquivos_internos_filtrados || item.arquivos_internos;
   zipContainer.querySelector(
     ".history-item-summary"
-  ).textContent = `${item.arquivos_internos.length} e-mails no ficheiro.`;
+  ).textContent = `${children.length} de ${item.arquivos_internos.length} e-mails correspondentes.`;
 
   const deleteBtn = zipContainer.querySelector(".delete-history-btn");
   deleteBtn.dataset.historyId = historyIndex;
 
-  item.arquivos_internos.forEach((subItem, subIndex) => {
+  children.forEach((subItem) => {
+    const originalSubIndex = item.arquivos_internos.findIndex(
+      (original) => original === subItem
+    );
     const subElement = createHistoryItemPreview(
       subItem,
       historyIndex,
-      subIndex
+      originalSubIndex
     );
     subList.appendChild(subElement);
   });
 
+  if (state.searchQuery || state.filters.category || state.filters.fileType) {
+    zipContainer.classList.add("expanded");
+    subList.style.display = "flex";
+  }
+
   return zipContainer;
 }
 
-function render(history) {
-  historySidebar.innerHTML =
-    !history || history.length === 0
-      ? '<p class="empty-history">Nenhum histórico ainda.</p>'
+function render(historyToRender) {
+  historyList.innerHTML =
+    !historyToRender || historyToRender.length === 0
+      ? '<p class="empty-history">Nenhum item encontrado.</p>'
       : "";
 
-  if (history) {
-    history.forEach((item, index) => {
-      const element = item.is_zip
-        ? createZipHistoryItem(item, index)
-        : createHistoryItemPreview(item, index);
-      historySidebar.appendChild(element);
-    });
-  }
+  historyToRender.forEach((item) => {
+    const originalIndex = state.fullHistory.findIndex(
+      (originalItem) => originalItem.assunto === item.assunto
+    );
+    const element = item.is_zip
+      ? createZipHistoryItem(item, originalIndex)
+      : createHistoryItemPreview(item, originalIndex);
+    historyList.appendChild(element);
+  });
 }
 
 function handleSidebarClick(e) {
   const target = e.target;
-
   const deleteBtn = target.closest(".delete-history-btn");
   if (deleteBtn) {
     e.stopPropagation();
@@ -121,8 +210,50 @@ function handleSidebarClick(e) {
   }
 }
 
+function clearAllFilters() {
+  state.filters.category = null;
+  state.filters.fileType = null;
+  state.searchQuery = "";
+
+  document.getElementById("history-search-input").value = "";
+  fileTypeFilter.value = "";
+
+  applyFiltersAndRender();
+}
+
 export function init() {
-  historySidebar.addEventListener("click", handleSidebarClick);
-  eventBus.on("historyUpdated", render);
+  const searchInput = document.getElementById("history-search-input");
+  const filterContainer = document.querySelector(".filter-container");
+
+  searchInput.addEventListener("input", (e) => {
+    state.searchQuery = e.target.value;
+    applyFiltersAndRender();
+  });
+
+  filterContainer.addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+
+    if (btn.id === "clear-filters-btn") {
+      clearAllFilters();
+    } else {
+      const value = btn.dataset.filterValue;
+      state.filters.category = state.filters.category === value ? null : value;
+      applyFiltersAndRender();
+    }
+  });
+
+  fileTypeFilter.addEventListener("change", (e) => {
+    state.filters.fileType = e.target.value || null;
+    applyFiltersAndRender();
+  });
+
+  historyList.addEventListener("click", handleSidebarClick);
+
+  eventBus.on("historyUpdated", (newHistory) => {
+    state.fullHistory = newHistory;
+    populateFileTypeFilter();
+    applyFiltersAndRender();
+  });
 }
 
