@@ -19,7 +19,7 @@
   {% block body_content %} {% endblock %} {% block modals %} {% endblock %}
 
   {% block scripts %}
-  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/modules/user.js') }}"></script>
   {% endblock %}
