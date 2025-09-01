@@ -1,3 +1,4 @@
+import { showInfoModal } from "./ui/info_modal.js";
 import { setLoading } from "./ui/state.js";
 import { processEmail } from "./api.js";
 
@@ -8,7 +9,10 @@ async function handleFormSubmit(event, onAnalysisComplete) {
   const text = textArea.value.trim();
 
   if (!text) {
-    alert("Por favor, digite o texto do email.");
+    await showInfoModal(
+      "Campo Vazio",
+      "Por favor, digite ou cole o texto do e-mail para análise."
+    );
     return;
   }
 
@@ -36,6 +40,8 @@ export function initializeFileUploadButton(onAnalysisComplete) {
 
   if (!uploadButton || !fileInput) return;
 
+  const allowedExtensions = [".txt", ".pdf", ".eml", ".msg", ".zip"];
+
   uploadButton.addEventListener("click", () => {
     fileInput.click();
   });
@@ -43,6 +49,27 @@ export function initializeFileUploadButton(onAnalysisComplete) {
   fileInput.addEventListener("change", async function (event) {
     const files = event.target.files;
     if (!files.length) {
+      return;
+    }
+
+    const invalidFile = Array.from(files).find((file) => {
+      const extension = file.name
+        .substring(file.name.lastIndexOf("."))
+        .toLowerCase();
+      return !allowedExtensions.includes(extension);
+    });
+
+    if (invalidFile) {
+      fileInput.value = "";
+
+      await showInfoModal(
+        "Arquivo Inválido",
+        `O formato do arquivo "${
+          invalidFile.name
+        }" não é suportado. Por favor, envie um dos seguintes formatos: ${allowedExtensions.join(
+          ", "
+        )}.`
+      );
       return;
     }
 
