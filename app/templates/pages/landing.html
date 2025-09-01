@@ -54,6 +54,31 @@
 
     <div class="tutorial-step">
       <div class="tutorial-text">
+        <h3>Conhecendo a Interface</h3>
+        <p>A barra de navegação no topo da página contém todas as ferramentas principais:</p>
+        <ul>
+          <li><strong>Escrever E-mail:</strong> (EM BREVE) Uma função para gerar e-mails completos a partir de uma
+            simples instrução.</li>
+          <li><strong>Analisar por Texto/Arquivo:</strong> As duas formas principais de enviar um e-mail para a IA.</li>
+          <li><strong>Configurações:</strong> Onde você personaliza o comportamento da ferramenta.</li>
+          <li>
+            <strong>Mudar Tema:</strong> Clique no ícone para alternar entre o modo claro e escuro. A sua escolha é
+            salva localmente no navegador, adaptando a interface à sua preferência.
+          </li>
+        </ul>
+      </div>
+      <div class="tutorial-image">
+        <div class="mock-navbar" style="padding: 20px; justify-content: center;">
+          <div class="mock-nav-button">
+            <img src="{{ url_for('static', filename='images/change_theme.svg') }}" alt="Mudar Tema">
+            <span>Mudar Tema</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-step reverse">
+      <div class="tutorial-text">
         <h3>Quais Arquivos o InboxFlow Aceita?</h3>
         <p>Nossa plataforma é compatível com os formatos de e-mail mais comuns. Você pode enviar arquivos:</p>
         <div class="file-types">
@@ -78,17 +103,26 @@
       </div>
     </div>
 
-    <div class="tutorial-step reverse">
+    <div class="tutorial-step">
       <div class="tutorial-text">
-        <h3>Personalize sua Experiência</h3>
+        <h3>Personalize sua Experiência ao Máximo</h3>
         <p>
-          Acesse a tela de <strong>Configurações</strong> na barra de navegação para ajustar o comportamento da IA. Você
-          pode:
+          A tela de <strong>Configurações</strong> é o coração da personalização. Ela está dividida em duas abas:
         </p>
+        <p><strong>Aba Geral:</strong></p>
         <ul>
-          <li>Definir uma saudação e assinatura padrão para todas as respostas.</li>
-          <li>Escolher modelos de IA diferentes para cada tipo de tarefa (resumo, classificação, etc.).</li>
-          <li>Personalizar os prompts que a IA usa para gerar as respostas.</li>
+          <li><strong>Saudação Padrão:</strong> Preencha para que toda resposta sugerida pela IA comece com o texto que
+            você definir (ex: "Prezado(a),").</li>
+          <li><strong>Assinatura Padrão:</strong> Adicione aqui sua assinatura para que ela seja incluída no final de
+            cada sugestão de resposta.</li>
+        </ul>
+        <p><strong>Aba Avançado:</strong></p>
+        <ul>
+          <li><strong>Modelos de IA (Gemini):</strong> Para cada tarefa (Classificação, Resumo, etc.), você pode
+            escolher um modelo de IA diferente. Modelos "Pro" são mais potentes, enquanto "Flash" são mais rápidos.</li>
+          <li><strong>Prompts Personalizados:</strong> Aqui você pode editar a instrução exata que a IA recebe para cada
+            tarefa. Use a variável <code>{email_text}</code> para indicar onde o conteúdo do e-mail deve ser inserido.
+            Deixar um campo em branco fará com que o sistema use o prompt padrão.</li>
         </ul>
         <p class="note">
           <strong>Atenção:</strong> Ao editar os prompts, é crucial manter a estrutura de saída solicitada (como o
@@ -97,20 +131,18 @@
       </div>
       <div class="tutorial-image">
         <div class="mock-settings">
-          <h4>Configurações</h4>
+          <h4>Configurações Avançadas</h4>
           <div class="mock-setting-item">
-            <label for="saudacao-padrao">Saudação Padrão</label>
-            <input type="text" id="saudacao-padrao" value="Prezado(a)," disabled />
-          </div>
-          <div class="mock-setting-item">
-            <label for="modelo-ia-resumo">Modelo de IA para Resumo</label>
-            <select id="modelo-ia-resumo" disabled>
-              <option>Gemini 1.5 Flash</option>
+            <label for="modelo-ia-resposta">Modelo para Sugestão de Resposta</label>
+            <select id="modelo-ia-resposta" disabled>
+              <option>Gemini 1.5 Pro</option>
+              <option selected>Gemini 1.5 Flash</option>
             </select>
           </div>
           <div class="mock-setting-item">
-            <label for="prompt-resposta">Prompt de Resposta</label>
-            <textarea id="prompt-resposta" disabled rows="3">Você é um assistente de e-mails...</textarea>
+            <label for="prompt-resposta">Prompt de Resposta (E-mail Produtivo)</label>
+            <textarea id="prompt-resposta" disabled
+              rows="3">Sua tarefa é gerar uma resposta... E-mail: "{email_text}"</textarea>
           </div>
         </div>
       </div>
