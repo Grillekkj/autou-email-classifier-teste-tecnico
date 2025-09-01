@@ -28,19 +28,15 @@ function populateFileTypeFilter() {
     fileTypeFilter.remove(1);
   }
 
-  [...fileTypes]
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((type) => {
-      const option = new Option(type.toUpperCase(), type);
-      fileTypeFilter.add(option);
-    });
+  [...fileTypes].sort().forEach((type) => {
+    const option = new Option(type.toUpperCase(), type);
+    fileTypeFilter.add(option);
+  });
 }
 
 function applyFiltersAndRender() {
   const query = state.searchQuery.toLowerCase().trim();
   const { category, fileType } = state.filters;
-
-  let filteredHistory = state.fullHistory;
 
   const itemMatchesFilters = (item) => {
     const categoryMatch = !category || item.categoria === category;
@@ -49,23 +45,23 @@ function applyFiltersAndRender() {
       !query ||
       item.assunto.toLowerCase().includes(query) ||
       (item.resumo || "").toLowerCase().includes(query);
-
     return categoryMatch && fileTypeMatch && textMatch;
   };
 
-  filteredHistory = filteredHistory
-    .map((item) => {
+  const filteredHistory = state.fullHistory
+    .map((item, index) => ({ ...item, originalIndex: index }))
+    .filter((item) => {
       if (item.is_zip) {
         const matchingChildren =
           item.arquivos_internos.filter(itemMatchesFilters);
         if (matchingChildren.length > 0) {
-          return { ...item, arquivos_internos_filtrados: matchingChildren };
+          item.arquivos_internos_filtrados = matchingChildren;
+          return true;
         }
-        return null;
+        return false;
       }
-      return itemMatchesFilters(item) ? item : null;
-    })
-    .filter(Boolean);
+      return itemMatchesFilters(item);
+    });
 
   render(filteredHistory);
   updateFilterButtonsUI();
@@ -168,12 +164,9 @@ function render(historyToRender) {
       : "";
 
   historyToRender.forEach((item) => {
-    const originalIndex = state.fullHistory.findIndex(
-      (originalItem) => originalItem.assunto === item.assunto
-    );
     const element = item.is_zip
-      ? createZipHistoryItem(item, originalIndex)
-      : createHistoryItemPreview(item, originalIndex);
+      ? createZipHistoryItem(item, item.originalIndex)
+      : createHistoryItemPreview(item, item.originalIndex);
     historyList.appendChild(element);
   });
 }
