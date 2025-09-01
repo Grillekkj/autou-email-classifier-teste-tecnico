@@ -69,10 +69,43 @@ function populateForm() {
   }
 }
 
+function setupTabs() {
+  const tabs = document.querySelectorAll(".tab-link");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      const target = document.getElementById(tab.dataset.tab);
+      tabContents.forEach((tc) => {
+        tc.classList.remove("active");
+        tc.style.display = "none";
+      });
+
+      if (target) {
+        target.classList.add("active");
+        target.style.display = "block";
+      }
+    });
+  });
+
+  tabs.forEach((tab) => {
+    const target = document.getElementById(tab.dataset.tab);
+    if (tab.classList.contains("active")) {
+      if (target) target.style.display = "block";
+    } else if (target) {
+      target.style.display = "none";
+    }
+  });
+}
+
 export function initializeSettingsPage() {
   const form = document.getElementById("settings-form");
   if (!form) return;
 
+  setupTabs();
   populateForm();
 
   form.addEventListener("submit", (e) => {
