@@ -133,16 +133,50 @@ document.addEventListener("DOMContentLoaded", function () {
     stateUI.setLoading(false);
 
     if (result) {
+      const wasActiveItemDeleted =
+        appState.activeItemId.historyId === historyId &&
+        appState.activeItemId.subId === subId;
+
       appState.currentHistory = result.historico;
       eventBus.emit("historyUpdated", appState.currentHistory);
 
-      if (
-        appState.activeItemId.historyId === historyId &&
-        appState.activeItemId.subId === subId
-      ) {
-        loadPage("/landing");
-        appState.activeItemId = { historyId: null, subId: null };
-      }
+      setTimeout(() => {
+        if (wasActiveItemDeleted) {
+          if (subId !== null) {
+            const zipContainer = document.querySelector(
+              `.history-item-zip-container .history-item-zip-header[data-history-id="${historyId}"]`
+            );
+
+            if (zipContainer) {
+              const container = zipContainer.closest(
+                ".history-item-zip-container"
+              );
+              if (!container.classList.contains("expanded")) {
+                container.classList.add("expanded");
+                container.querySelector(".zip-file-list").style.display =
+                  "flex";
+              }
+
+              const firstItemElement = container.querySelector(
+                `.history-item-preview[data-sub-id="0"]`
+              );
+              if (firstItemElement) {
+                eventBus.emit("historyItemSelected", {
+                  historyId: historyId,
+                  subId: 0,
+                  element: firstItemElement,
+                });
+              }
+            } else {
+              loadPage("/landing");
+              appState.activeItemId = { historyId: null, subId: null };
+            }
+          } else {
+            loadPage("/landing");
+            appState.activeItemId = { historyId: null, subId: null };
+          }
+        }
+      }, 0);
     }
   });
 
