@@ -118,6 +118,7 @@ function createZipHistoryItem(item, historyIndex) {
   const zipContainer = clone.querySelector(".history-item-zip-container");
   const header = zipContainer.querySelector(".history-item-zip-header");
   const subList = zipContainer.querySelector(".zip-file-list");
+  const summaryEl = zipContainer.querySelector(".history-item-summary");
 
   zipContainer.dataset.historyId = historyIndex;
   header.dataset.historyId = historyIndex;
@@ -128,9 +129,14 @@ function createZipHistoryItem(item, historyIndex) {
     item.timestamp;
 
   const children = item.arquivos_internos_filtrados || item.arquivos_internos;
-  zipContainer.querySelector(
-    ".history-item-summary"
-  ).textContent = `${children.length} de ${item.arquivos_internos.length} e-mails correspondentes.`;
+  const isFilterActive =
+    state.searchQuery || state.filters.category || state.filters.fileType;
+
+  if (isFilterActive) {
+    summaryEl.textContent = `${children.length} de ${item.arquivos_internos.length} e-mails correspondentes.`;
+  } else {
+    summaryEl.textContent = `${item.arquivos_internos.length} e-mails no ficheiro.`;
+  }
 
   const deleteBtn = zipContainer.querySelector(".delete-history-btn");
   deleteBtn.dataset.historyId = historyIndex;
@@ -147,7 +153,7 @@ function createZipHistoryItem(item, historyIndex) {
     subList.appendChild(subElement);
   });
 
-  if (state.searchQuery || state.filters.category || state.filters.fileType) {
+  if (isFilterActive) {
     zipContainer.classList.add("expanded");
     subList.style.display = "flex";
   }
