@@ -13,17 +13,16 @@ function createHistoryItemPreview(item, historyIndex, subIndex = null) {
     preview.dataset.subId = subIndex;
   }
 
+  const summary = item.resumo || "";
   preview.querySelector(".history-item-subject").textContent = item.assunto;
   preview.querySelector(".history-item-timestamp").textContent =
     item.timestamp || "";
   preview.querySelector(".history-item-summary").textContent =
-    (item.resumo || "").substring(0, 70) +
-    ((item.resumo || "").length > 70 ? "..." : "");
+    summary.substring(0, 70) + (summary.length > 70 ? "..." : "");
 
   const categoryBadge = preview.querySelector(".category-badge");
   categoryBadge.textContent = item.categoria;
   categoryBadge.className = `category-badge category-badge-${item.categoria}`;
-
   preview.querySelector(".file-type-badge").textContent = item.tipo_arquivo;
 
   const deleteBtn = preview.querySelector(".delete-history-btn");
@@ -41,7 +40,9 @@ function createZipHistoryItem(item, historyIndex) {
   const header = zipContainer.querySelector(".history-item-zip-header");
   const subList = zipContainer.querySelector(".zip-file-list");
 
+  zipContainer.dataset.historyId = historyIndex;
   header.dataset.historyId = historyIndex;
+
   zipContainer.querySelector(".history-item-subject").textContent =
     item.assunto;
   zipContainer.querySelector(".history-item-timestamp").textContent =
@@ -66,19 +67,19 @@ function createZipHistoryItem(item, historyIndex) {
 }
 
 function render(history) {
-  historySidebar.innerHTML = "";
-  if (!history || history.length === 0) {
-    historySidebar.innerHTML =
-      '<p class="empty-history">Nenhum histórico ainda.</p>';
-    return;
-  }
+  historySidebar.innerHTML =
+    !history || history.length === 0
+      ? '<p class="empty-history">Nenhum histórico ainda.</p>'
+      : "";
 
-  history.forEach((item, index) => {
-    const element = item.is_zip
-      ? createZipHistoryItem(item, index)
-      : createHistoryItemPreview(item, index);
-    historySidebar.appendChild(element);
-  });
+  if (history) {
+    history.forEach((item, index) => {
+      const element = item.is_zip
+        ? createZipHistoryItem(item, index)
+        : createHistoryItemPreview(item, index);
+      historySidebar.appendChild(element);
+    });
+  }
 }
 
 function handleSidebarClick(e) {
@@ -99,27 +100,9 @@ function handleSidebarClick(e) {
   if (zipHeader) {
     e.stopPropagation();
     const container = zipHeader.closest(".history-item-zip-container");
-    const subList = container.querySelector(".zip-file-list");
-    const isExpanded = container.classList.toggle("expanded");
-    subList.style.display = isExpanded ? "flex" : "none";
-
-    if (isExpanded) {
-      const historyId = parseInt(zipHeader.dataset.historyId, 10);
-      const subId = 0;
-      const firstItemElement = container.querySelector(
-        `.history-item-preview[data-sub-id="0"]`
-      );
-
-      if (firstItemElement) {
-        eventBus.emit("historyItemSelected", {
-          historyId,
-          subId,
-          element: firstItemElement,
-        });
-      }
-    } else {
-      eventBus.emit("historyItemUnselected");
-    }
+    container.classList.toggle("expanded");
+    container.querySelector(".zip-file-list").style.display =
+      container.classList.contains("expanded") ? "flex" : "none";
     return;
   }
 
@@ -138,11 +121,8 @@ function handleSidebarClick(e) {
   }
 }
 
-export function init(initialHistory) {
-  render(initialHistory);
+export function init() {
   historySidebar.addEventListener("click", handleSidebarClick);
-  eventBus.on("historyUpdated", (newHistory) => {
-    render(newHistory);
-  });
+  eventBus.on("historyUpdated", render);
 }
 

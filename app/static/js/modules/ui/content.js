@@ -18,7 +18,6 @@ function renderAnalysisDetails(item) {
       </div>
       <p class="analysis-summary">${item.resumo}</p>
     </header>
-    
     <div class="text-view-wrapper">
       <div class="text-view-actions">
           <button id="copy-btn" class="icon-btn" title="Copiar Sugestão">
@@ -37,84 +36,83 @@ function renderAnalysisDetails(item) {
   contentPanel.innerHTML = detailsHtml;
 }
 
-function renderPage(htmlContent) {
-  currentItem = null;
-  contentPanel.innerHTML = htmlContent;
+function toggleTextView() {
+  const regenerateBtn = document.getElementById("regenerate-btn");
+  const contentEl = document.getElementById("text-view-content");
+  const toggleBtn = document.getElementById("view-toggle-btn");
+  const copyBtn = document.getElementById("copy-btn");
+
+  const isShowingResponse = toggleBtn.title === "Ver E-mail Original";
+
+  contentEl.textContent = isShowingResponse
+    ? currentItem.email_original
+    : currentItem.resposta_sugerida;
+  toggleBtn.title = isShowingResponse
+    ? "Ver Resposta Sugerida"
+    : "Ver E-mail Original";
+
+  const isVisible = !isShowingResponse;
+  copyBtn.style.display = isVisible ? "inline-block" : "none";
+  regenerateBtn.style.display = isVisible ? "inline-block" : "none";
 }
 
-async function setupContentInteractions(e) {
+function copySuggestedResponse() {
+  const contentEl = document.getElementById("text-view-content");
+  const copyBtn = document.getElementById("copy-btn");
+
+  navigator.clipboard.writeText(contentEl.textContent).then(() => {
+    const originalTitle = copyBtn.title;
+    copyBtn.title = "Copiado!";
+    setTimeout(() => {
+      copyBtn.title = originalTitle;
+    }, 2000);
+  });
+}
+
+async function handleRegenerateResponse() {
+  if (!currentItem) return;
+
+  setLoading(true);
+  const result = await regenerateResponse(
+    currentItem.historyId,
+    currentItem.subId
+  );
+  setLoading(false);
+
+  if (result?.resposta_sugerida) {
+    eventBus.emit("responseRegenerated", {
+      newResponse: result.resposta_sugerida,
+    });
+  }
+}
+
+function handleContentClick(e) {
   if (!currentItem) return;
 
   const target = e.target;
-
-  const toggleBtn = target.closest("#view-toggle-btn");
-  if (toggleBtn) {
-    const contentEl = document.getElementById("text-view-content");
-    const isShowingSuggested = toggleBtn.title === "Ver E-mail Original";
-    const copyBtn = document.getElementById("copy-btn");
-    const regenerateBtn = document.getElementById("regenerate-btn");
-
-    if (isShowingSuggested) {
-      contentEl.textContent = currentItem.email_original;
-      toggleBtn.title = "Ver Resposta Sugerida";
-      if (copyBtn) copyBtn.style.display = "none";
-      if (regenerateBtn) regenerateBtn.style.display = "none";
-    } else {
-      contentEl.textContent = currentItem.resposta_sugerida;
-      toggleBtn.title = "Ver E-mail Original";
-      if (copyBtn) copyBtn.style.display = "inline-block";
-      if (regenerateBtn) regenerateBtn.style.display = "inline-block";
-    }
-    return;
-  }
-
-  const copyBtn = target.closest("#copy-btn");
-  if (copyBtn) {
-    const contentEl = document.getElementById("text-view-content");
-    navigator.clipboard.writeText(contentEl.textContent).then(() => {
-      const originalTitle = copyBtn.title;
-      copyBtn.title = "Copiado!";
-      setTimeout(() => {
-        copyBtn.title = originalTitle;
-      }, 2000);
-    });
-    return;
-  }
-
-  const regenerateBtn = target.closest("#regenerate-btn");
-  if (regenerateBtn) {
-    setLoading(true);
-    const result = await regenerateResponse(
-      currentItem,
-      currentItem.historyId,
-      currentItem.subId
-    );
-    setLoading(false);
-
-    if (result?.resposta_sugerida) {
-      eventBus.emit("responseRegenerated", {
-        newResponse: result.resposta_sugerida,
-      });
-    }
-  }
+  if (target.closest("#view-toggle-btn")) toggleTextView();
+  else if (target.closest("#copy-btn")) copySuggestedResponse();
+  else if (target.closest("#regenerate-btn")) handleRegenerateResponse();
 }
 
 export function init() {
   eventBus.on("contentUpdated", (html) => {
-    renderPage(html);
+    currentItem = null;
+    contentPanel.innerHTML = html;
   });
 
-  eventBus.on("analysisResultLoaded", (item) => {
-    renderAnalysisDetails(item);
-  });
+  eventBus.on("analysisResultLoaded", renderAnalysisDetails);
 
   eventBus.on("responseRegenerated", ({ newResponse }) => {
     if (currentItem) {
       currentItem.resposta_sugerida = newResponse;
-      document.getElementById("text-view-content").textContent = newResponse;
+      const contentEl = document.getElementById("text-view-content");
+      if (contentEl) {
+        contentEl.textContent = newResponse;
+      }
     }
   });
 
-  contentPanel.addEventListener("click", setupContentInteractions);
+  contentPanel.addEventListener("click", handleContentClick);
 }
 
