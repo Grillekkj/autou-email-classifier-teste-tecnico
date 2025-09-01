@@ -4,91 +4,101 @@
     <span class="save-reminder">Não se esqueça de salvar lá no final!</span>
   </div>
   <p>
-    Personalize os modelos de IA, os prompts e sua assinatura de e-mail.
+    Personalize os prompts, modelos de IA, sua assinatura e saudação de e-mail.
     As alterações são salvas localmente no seu navegador.
   </p>
 </header>
 
 <main class="settings-main">
+  <div class="tabs-container">
+    <button type="button" class="tab-link active" data-tab="general">Geral</button>
+    <button type="button" class="tab-link" data-tab="advanced">Avançado</button>
+  </div>
+
   <form id="settings-form">
-    <div class="settings-section">
-      <h2>Saudação Padrão</h2>
-      <p>Esta saudação será usada no início de todas as respostas sugeridas.</p>
-      <textarea id="setting-greeting" rows="2" placeholder="Prezado(a),"></textarea>
-    </div>
+    <div id="general" class="tab-content active">
+      <div class="settings-section">
+        <h2>Saudação Padrão</h2>
+        <p>Esta saudação será usada no início de todas as respostas sugeridas.</p>
+        <textarea id="setting-greeting" rows="2" placeholder="Prezado(a),"></textarea>
+      </div>
 
-    <div class="settings-section">
-      <h2>Assinatura Padrão</h2>
-      <p>Esta assinatura será adicionada ao final de todas as respostas sugeridas.</p>
-      <textarea id="setting-signature" rows="4" placeholder="Atenciosamente,&#10;"></textarea>
-    </div>
-
-    <div class="settings-section">
-      <h2>Modelos de IA (Gemini)</h2>
-      <p>Escolha um modelo de IA para cada tarefa específica. Modelos "Pro" são mais poderosos, enquanto "Flash" é mais
-        rápido.</p>
-      <div class="model-grid">
-        <div class="setting-item">
-          <label for="setting-model-classification">Classificação do E-mail</label>
-          <select id="setting-model-classification">
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-            <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label for="setting-model-summary">Resumo do E-mail</label>
-          <select id="setting-model-summary">
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-            <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label for="setting-model-subject">Sugestão de Assunto</label>
-          <select id="setting-model-subject">
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-            <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label for="setting-model-response">Sugestão de Resposta</label>
-          <select id="setting-model-response">
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-            <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-          </select>
-        </div>
+      <div class="settings-section">
+        <h2>Assinatura Padrão</h2>
+        <p>Esta assinatura será adicionada ao final de todas as respostas sugeridas.</p>
+        <textarea id="setting-signature" rows="4" placeholder="Atenciosamente,&#10;"></textarea>
       </div>
     </div>
 
-    <div class="settings-section">
-      <h2>Prompts Personalizados</h2>
-      <p>
-        Edite os prompts para ajustar o tom e o estilo da IA. Use <code>{email_text}</code> onde o conteúdo do e-mail
-        deve ser inserido. Deixe em branco para usar o prompt padrão do sistema.
-      </p>
+    <div id="advanced" class="tab-content">
+      <div class="settings-section">
+        <h2>Modelos de IA (Gemini)</h2>
+        <p>Escolha um modelo de IA para cada tarefa específica. Modelos "Pro" são mais poderosos, enquanto "Flash" é
+          mais
+          rápido.</p>
+        <div class="model-grid">
+          <div class="setting-item">
+            <label for="setting-model-classification">Classificação do E-mail</label>
+            <select id="setting-model-classification">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label for="setting-model-summary">Resumo do E-mail</label>
+            <select id="setting-model-summary">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label for="setting-model-subject">Sugestão de Assunto</label>
+            <select id="setting-model-subject">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label for="setting-model-response">Sugestão de Resposta</label>
+            <select id="setting-model-response">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-      <div class="setting-item">
-        <label for="setting-prompt-summary">Prompt de Resumo</label>
-        <textarea id="setting-prompt-summary" rows="5"></textarea>
-      </div>
-      <div class="setting-item">
-        <label for="setting-prompt-classification">Prompt de Classificação</label>
-        <textarea id="setting-prompt-classification" rows="5"></textarea>
-      </div>
-      <div class="setting-item">
-        <label for="setting-prompt-response">Prompt de Resposta (E-mail Produtivo)</label>
-        <textarea id="setting-prompt-response" rows="5"></textarea>
-      </div>
-      <div class="setting-item">
-        <label for="setting-prompt-simple-response">Prompt de Resposta (E-mail Improdutivo/Simples)</label>
-        <textarea id="setting-prompt-simple-response" rows="5"></textarea>
-      </div>
-      <div class="setting-item">
-        <label for="setting-prompt-subject">Prompt de Sugestão de Assunto</label>
-        <textarea id="setting-prompt-subject" rows="5"></textarea>
+      <div class="settings-section">
+        <h2>Prompts Personalizados</h2>
+        <p>
+          Edite os prompts para ajustar o tom e o estilo da IA. Use <code>{email_text}</code> onde o conteúdo do e-mail
+          deve ser inserido. Deixe em branco para usar o prompt padrão do sistema.
+        </p>
+
+        <div class="setting-item">
+          <label for="setting-prompt-summary">Prompt de Resumo</label>
+          <textarea id="setting-prompt-summary" rows="5"></textarea>
+        </div>
+        <div class="setting-item">
+          <label for="setting-prompt-classification">Prompt de Classificação</label>
+          <textarea id="setting-prompt-classification" rows="5"></textarea>
+        </div>
+        <div class="setting-item">
+          <label for="setting-prompt-response">Prompt de Resposta (E-mail Produtivo)</label>
+          <textarea id="setting-prompt-response" rows="5"></textarea>
+        </div>
+        <div class="setting-item">
+          <label for="setting-prompt-simple-response">Prompt de Resposta (E-mail Improdutivo/Simples)</label>
+          <textarea id="setting-prompt-simple-response" rows="5"></textarea>
+        </div>
+        <div class="setting-item">
+          <label for="setting-prompt-subject">Prompt de Sugestão de Assunto</label>
+          <textarea id="setting-prompt-subject" rows="5"></textarea>
+        </div>
       </div>
     </div>
 
