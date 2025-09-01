@@ -198,6 +198,36 @@
   resize: none;
 }
 
+.mock-history-item {
+  position: relative;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.mock-history-item h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.mock-delete-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.mock-history-item:hover .mock-delete-icon {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .tutorial-step,
   .tutorial-step.reverse {
@@ -208,5 +238,8 @@
     flex-basis: auto;
     margin-top: 20px;
   }
-}
 
+  .mock-delete-icon {
+    opacity: 1;
+  }
+}

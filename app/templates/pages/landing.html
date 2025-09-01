@@ -65,6 +65,10 @@
             <strong>Mudar Tema:</strong> Clique no ícone para alternar entre o modo claro e escuro. A sua escolha é
             salva localmente no navegador, adaptando a interface à sua preferência.
           </li>
+          <li>
+            <strong>Voltar ao Início:</strong> A qualquer momento, clique no logo da <strong>AutoU</strong> no canto
+            direito da barra de navegação para retornar a esta tela de boas-vindas.
+          </li>
         </ul>
       </div>
       <div class="tutorial-image">
@@ -104,6 +108,38 @@
     </div>
 
     <div class="tutorial-step">
+      <div class="tutorial-text">
+        <h3>Gerenciando seu Histórico</h3>
+        <p>Manter seu histórico organizado é fácil. Veja como apagar itens:</p>
+        <ul>
+          <li>
+            <strong>Como revelar o ícone de exclusão:</strong><br>
+            - No <strong>computador</strong>, passe o mouse sobre o item.<br>
+            - No <strong>celular</strong>, o ícone já estará visível.
+          </li>
+          <li>
+            <strong>Clique para apagar:</strong> Ao clicar no ícone <img
+              src="{{ url_for('static', filename='images/delete_icon.svg') }}" alt="Ícone de exclusão"
+              style="width: 16px; height: 16px; vertical-align: middle;">, uma confirmação será solicitada.
+          </li>
+          <li>
+            <strong>Apagar ZIPs:</strong> Você pode apagar um <code>.zip</code> inteiro ou apenas um e-mail de dentro
+            dele. O ícone aparecerá tanto no cabeçalho do ZIP quanto nos itens internos.
+          </li>
+        </ul>
+      </div>
+      <div class="tutorial-image">
+        <div class="mock-history-item">
+          <img src="{{ url_for('static', filename='images/delete_icon.svg') }}" alt="Delete Icon"
+            class="mock-delete-icon">
+          <h4>Assunto do E-mail</h4>
+          <p><strong>Passe o mouse aqui para revelar o ícone de exclusão.</strong><br><small>(No celular, ele já está
+              visível)</small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-step reverse">
       <div class="tutorial-text">
         <h3>Personalize sua Experiência ao Máximo</h3>
         <p>
