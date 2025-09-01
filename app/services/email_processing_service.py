@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from typing import List
 import zipfile
 import io
@@ -129,7 +130,7 @@ class EmailProcessingService:
         return ""
 
     def _get_timestamp(self) -> str:
-        now = datetime.now()
+        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
         days = [
             "Seg",
             "Ter",
