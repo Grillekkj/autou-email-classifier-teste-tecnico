@@ -36,12 +36,18 @@ if __name__ == "__main__":
     if "--prod" in sys.argv:
         port = os.environ.get("PORT", "5000")
         print(f"Iniciando aplicação em produção com Gunicorn na porta {port}...")
-        subprocess.run([
-            sys.executable, "-m", "gunicorn",
-            "-w", "4",
-            "-b", f"0.0.0.0:{port}",
-            "app:create_app()"
-        ])
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "gunicorn",
+                "-w",
+                "8",
+                "-b",
+                f"0.0.0.0:{port}",
+                "app:create_app()",
+            ]
+        )
     else:
         print("\nIniciando a aplicação Flask em desenvolvimento...")
         app = create_app()
