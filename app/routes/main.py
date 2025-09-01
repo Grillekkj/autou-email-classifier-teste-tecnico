@@ -31,7 +31,7 @@ email_controller = EmailController(
 
 @main_bp.route("/")
 def home():
-    return render_template("index.html", historico=email_controller.get_history())
+    return render_template("index.html", historico=[])
 
 
 @main_bp.route("/app")
@@ -67,3 +67,8 @@ def regenerate_response():
 @main_bp.route("/delete-history-item", methods=["POST"])
 def delete_history_item():
     return email_controller.delete_history_item()
+
+
+@main_bp.route("/get-history", methods=["POST"])
+def get_history():
+    return email_controller.get_history_for_user()
