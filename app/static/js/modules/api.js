@@ -1,30 +1,13 @@
 import { getSettings } from "./settings.js";
+import { getUserId } from "./user.js";
 
-export async function processEmail(formData, isFile) {
-  const url = "/processar-email";
-  const settings = getSettings();
-  let requestOptions;
-
-  if (isFile) {
-    formData.append("settings", JSON.stringify(settings));
-    requestOptions = {
-      method: "POST",
-      body: formData,
-    };
-  } else {
-    const payload = {
-      email_text: formData.get("email_text"),
-      settings: settings,
-    };
-    requestOptions = {
+async function makeRequest(url, body) {
+  try {
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    };
-  }
-
-  try {
-    const response = await fetch(url, requestOptions);
+      body: JSON.stringify(body),
+    });
     const data = await response.json();
     if (!response.ok) {
       throw new Error(
@@ -33,55 +16,68 @@ export async function processEmail(formData, isFile) {
     }
     return data;
   } catch (error) {
-    console.error("Erro ao processar email:", error);
+    console.error(`Erro em ${url}:`, error);
     alert("Erro ao processar a solicitação: " + error.message);
     return null;
   }
 }
 
-export async function regenerateResponse(itemData, historyId, subId) {
-  const url = "/regenerate-response";
+export async function processEmail(formData, isFile) {
+  const url = "/processar-email";
   const settings = getSettings();
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        settings,
-        historyId,
-        subId,
-      }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || "Ocorreu um erro ao regenerar a resposta.");
+  const userId = getUserId();
+
+  if (isFile) {
+    formData.append("settings", JSON.stringify(settings));
+    formData.append("userId", userId);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Ocorreu um erro na comunicação com a API."
+        );
+      }
+      return data;
+    } catch (error) {
+      console.error("Erro ao processar email (arquivo):", error);
+      alert("Erro ao processar a solicitação: " + error.message);
+      return null;
     }
-    return data;
-  } catch (error) {
-    console.error("Erro ao regenerar resposta:", error);
-    alert("Erro: " + error.message);
-    return null;
+  } else {
+    const payload = {
+      email_text: formData.get("email_text"),
+      settings: settings,
+      userId: userId,
+    };
+    return makeRequest(url, payload);
   }
 }
 
+export async function regenerateResponse(itemData, historyId, subId) {
+  const payload = {
+    settings: getSettings(),
+    userId: getUserId(),
+    historyId,
+    subId,
+  };
+  return makeRequest("/regenerate-response", payload);
+}
+
 export async function deleteHistoryItem(historyId, subId) {
-  const url = "/delete-history-item";
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ historyId, subId }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || "Ocorreu um erro ao excluir o item.");
-    }
-    return data;
-  } catch (error) {
-    console.error("Erro ao excluir item do histórico:", error);
-    alert("Erro: " + error.message);
-    return null;
-  }
+  const payload = {
+    userId: getUserId(),
+    historyId,
+    subId,
+  };
+  return makeRequest("/delete-history-item", payload);
+}
+
+export async function getHistory() {
+  return makeRequest("/get-history", { userId: getUserId() });
 }
 
 export async function fetchPageContent(url) {
