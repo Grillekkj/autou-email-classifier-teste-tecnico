@@ -57,7 +57,7 @@ export async function processEmail(formData, isFile) {
   }
 }
 
-export async function regenerateResponse(itemData, historyId, subId) {
+export async function regenerateResponse(historyId, subId) {
   const payload = {
     settings: getSettings(),
     userId: getUserId(),
