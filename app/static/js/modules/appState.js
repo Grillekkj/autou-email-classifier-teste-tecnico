@@ -38,5 +38,18 @@ export const appState = {
       itemToUpdate.resposta_sugerida = newResponse;
     }
   },
+
+  prepareForDeletion: (historyId, subId) => {
+    const wasActive =
+      state.activeItemId.historyId === historyId &&
+      state.activeItemId.subId === subId;
+
+    const previouslyActiveItemData = appState.findItem(
+      state.activeItemId.historyId,
+      state.activeItemId.subId
+    );
+
+    return { wasActive, previouslyActiveItemData };
+  },
 };
 

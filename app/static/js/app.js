@@ -86,13 +86,12 @@ function handleRetainActiveItem(previouslyActiveItemData, newHistory) {
 }
 
 function handlePostDeletionUI(
-  wasActiveItemDeleted,
-  previouslyActiveItemData,
+  { wasActive, previouslyActiveItemData },
   deletedItemIds
 ) {
   requestAnimationFrame(() => {
     const newHistory = appState.getHistory();
-    if (wasActiveItemDeleted) {
+    if (wasActive) {
       handleDeletedActiveItem(deletedItemIds, newHistory);
     } else {
       handleRetainActiveItem(previouslyActiveItemData, newHistory);
@@ -186,21 +185,16 @@ async function handleDeleteRequest({ historyId, subId }) {
   );
   if (!confirmed) return;
 
-  const activeItemId = appState.getActiveItemId();
-  const activeItemData =
-    appState.findItem(activeItemId.historyId, activeItemId.subId) ||
-    appState.findItem(activeItemId.historyId, null);
+  const deletionState = appState.prepareForDeletion(historyId, subId);
 
   stateUI.setLoading(true);
   const result = await api.deleteHistoryItem(historyId, subId);
   stateUI.setLoading(false);
 
   if (result) {
-    const wasActive =
-      activeItemId.historyId === historyId && activeItemId.subId === subId;
     appState.setHistory(result.historico);
     eventBus.emit("historyUpdated", appState.getHistory());
-    handlePostDeletionUI(wasActive, activeItemData, { historyId, subId });
+    handlePostDeletionUI(deletionState, { historyId, subId });
   }
 }
 
