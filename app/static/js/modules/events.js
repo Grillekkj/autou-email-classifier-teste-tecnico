@@ -1,4 +1,5 @@
 import { showInfoModal } from "./ui/info_modal.js";
+import * as dom from "./ui/domElements.js";
 import { setLoading } from "./ui/state.js";
 import { processEmail } from "./api.js";
 
@@ -17,9 +18,8 @@ async function handleFormSubmit(event, onAnalysisComplete) {
   }
 
   setLoading(true);
-  const modal = document.getElementById("text-analysis-modal");
-  if (modal?.contains(form)) {
-    modal.style.display = "none";
+  if (dom.textAnalysisModal?.contains(form)) {
+    dom.textAnalysisModal.style.display = "none";
   }
 
   const formData = new FormData();
@@ -35,18 +35,15 @@ async function handleFormSubmit(event, onAnalysisComplete) {
 }
 
 export function initializeFileUploadButton(onAnalysisComplete) {
-  const uploadButton = document.getElementById("upload-file-btn");
-  const fileInput = document.getElementById("global-file-input");
-
-  if (!uploadButton || !fileInput) return;
+  if (!dom.uploadFileBtn || !dom.globalFileInput) return;
 
   const allowedExtensions = [".txt", ".pdf", ".eml", ".msg", ".zip"];
 
-  uploadButton.addEventListener("click", () => {
-    fileInput.click();
+  dom.uploadFileBtn.addEventListener("click", () => {
+    dom.globalFileInput.click();
   });
 
-  fileInput.addEventListener("change", async function (event) {
+  dom.globalFileInput.addEventListener("change", async function (event) {
     const files = event.target.files;
     if (!files.length) {
       return;
@@ -60,7 +57,7 @@ export function initializeFileUploadButton(onAnalysisComplete) {
     });
 
     if (invalidFile) {
-      fileInput.value = "";
+      dom.globalFileInput.value = "";
 
       await showInfoModal(
         "Arquivo Inválido",
@@ -87,57 +84,53 @@ export function initializeFileUploadButton(onAnalysisComplete) {
       onAnalysisComplete(data);
     }
 
-    fileInput.value = "";
+    dom.globalFileInput.value = "";
   });
 }
 
 export function initializeModal(onAnalysisComplete) {
-  const modal = document.getElementById("text-analysis-modal");
-  const openBtn = document.getElementById("open-text-modal-btn");
-  const closeBtn = document.getElementById("close-modal-btn");
-  const modalForm = document.getElementById("modal-email-form");
+  if (
+    !dom.textAnalysisModal ||
+    !dom.openTextModalBtn ||
+    !dom.closeModalBtn ||
+    !dom.modalEmailForm
+  )
+    return;
 
-  if (!modal || !openBtn || !closeBtn || !modalForm) return;
+  const openModal = () => (dom.textAnalysisModal.style.display = "flex");
+  const closeModal = () => (dom.textAnalysisModal.style.display = "none");
 
-  const openModal = () => (modal.style.display = "flex");
-  const closeModal = () => (modal.style.display = "none");
+  dom.openTextModalBtn.addEventListener("click", openModal);
+  dom.closeModalBtn.addEventListener("click", closeModal);
 
-  openBtn.addEventListener("click", openModal);
-  closeBtn.addEventListener("click", closeModal);
-
-  modalForm.addEventListener("submit", (event) =>
+  dom.modalEmailForm.addEventListener("submit", (event) =>
     handleFormSubmit(event, onAnalysisComplete)
   );
 }
 
 export function initializeResponderForm(onAnalysisComplete) {
-  const emailForm = document.getElementById("email-form");
-  if (!emailForm) return;
+  if (!dom.emailForm) return;
 
-  emailForm.addEventListener("submit", (event) =>
+  dom.emailForm.addEventListener("submit", (event) =>
     handleFormSubmit(event, onAnalysisComplete)
   );
 }
 
 export function setupSidebarToggle() {
-  const toggleBtn = document.getElementById("menu-toggle-btn");
-  const sidebar = document.getElementById("history-sidebar");
-  const overlay = document.getElementById("sidebar-overlay");
-
-  if (!toggleBtn || !sidebar || !overlay) return;
+  if (!dom.menuToggleBtn || !dom.sidebar || !dom.sidebarOverlay) return;
 
   const closeSidebar = () => {
-    sidebar.classList.remove("is-open");
-    overlay.classList.remove("is-visible");
+    dom.sidebar.classList.remove("is-open");
+    dom.sidebarOverlay.classList.remove("is-visible");
   };
 
-  toggleBtn.addEventListener("click", (e) => {
+  dom.menuToggleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    sidebar.classList.toggle("is-open");
-    overlay.classList.toggle("is-visible");
+    dom.sidebar.classList.toggle("is-open");
+    dom.sidebarOverlay.classList.toggle("is-visible");
   });
 
-  overlay.addEventListener("click", closeSidebar);
+  dom.sidebarOverlay.addEventListener("click", closeSidebar);
 }
 
 export function setupNavigation(loadPageCallback) {

@@ -1,3 +1,4 @@
+import { showInfoModal } from "./ui/info_modal.js";
 import { getSettings } from "./settings.js";
 import { getUserId } from "./user.js";
 
@@ -17,7 +18,10 @@ async function makeRequest(url, body) {
     return data;
   } catch (error) {
     console.error(`Erro em ${url}:`, error);
-    alert("Erro ao processar a solicitação: " + error.message);
+    await showInfoModal(
+      "Erro de Comunicação",
+      "Não foi possível processar a solicitação: " + error.message
+    );
     return null;
   }
 }
@@ -44,7 +48,10 @@ export async function processEmail(formData, isFile) {
       return data;
     } catch (error) {
       console.error("Erro ao processar email (arquivo):", error);
-      alert("Erro ao processar a solicitação: " + error.message);
+      await showInfoModal(
+        "Erro de Comunicação",
+        "Não foi possível processar a solicitação: " + error.message
+      );
       return null;
     }
   } else {

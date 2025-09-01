@@ -1,9 +1,5 @@
 import { eventBus } from "../../core/eventBus.js";
-
-const itemTemplate = document.getElementById("history-item-template");
-const zipTemplate = document.getElementById("zip-container-template");
-const fileTypeFilter = document.getElementById("file-type-filter");
-const historyList = document.getElementById("history-list");
+import * as dom from "./domElements.js";
 
 const state = {
   fullHistory: [],
@@ -25,15 +21,15 @@ function populateFileTypeFilter() {
     }
   });
 
-  while (fileTypeFilter.options.length > 1) {
-    fileTypeFilter.remove(1);
+  while (dom.fileTypeFilter.options.length > 1) {
+    dom.fileTypeFilter.remove(1);
   }
 
   [...fileTypes]
     .sort((a, b) => a.localeCompare(b))
     .forEach((type) => {
       const option = new Option(type.toUpperCase(), type);
-      fileTypeFilter.add(option);
+      dom.fileTypeFilter.add(option);
     });
 }
 
@@ -71,9 +67,9 @@ function applyFiltersAndRender() {
 }
 
 function updateFilterButtonsUI() {
-  const container = document.querySelector(".filter-container");
-  const buttons = container.querySelectorAll(".filter-btn:not(.clear-filters)");
-  const clearBtn = document.getElementById("clear-filters-btn");
+  const buttons = dom.filterContainer.querySelectorAll(
+    ".filter-btn:not(.clear-filters)"
+  );
 
   buttons.forEach((btn) => {
     btn.classList.toggle(
@@ -82,15 +78,15 @@ function updateFilterButtonsUI() {
     );
   });
 
-  fileTypeFilter.classList.toggle("active", !!state.filters.fileType);
+  dom.fileTypeFilter.classList.toggle("active", !!state.filters.fileType);
 
   const hasActiveFilter =
     state.filters.category || state.filters.fileType || state.searchQuery;
-  clearBtn.style.display = hasActiveFilter ? "inline-block" : "none";
+  dom.clearFiltersBtn.style.display = hasActiveFilter ? "inline-block" : "none";
 }
 
 function createHistoryItemPreview(item, historyIndex, subIndex = null) {
-  const clone = itemTemplate.content.cloneNode(true);
+  const clone = dom.historyItemTemplate.content.cloneNode(true);
   const preview = clone.querySelector(".history-item-preview");
   preview.dataset.historyId = historyIndex;
   if (subIndex !== null) preview.dataset.subId = subIndex;
@@ -113,7 +109,7 @@ function createHistoryItemPreview(item, historyIndex, subIndex = null) {
 }
 
 function createZipHistoryItem(item, historyIndex) {
-  const clone = zipTemplate.content.cloneNode(true);
+  const clone = dom.zipContainerTemplate.content.cloneNode(true);
   const zipContainer = clone.querySelector(".history-item-zip-container");
   const header = zipContainer.querySelector(".history-item-zip-header");
   const subList = zipContainer.querySelector(".zip-file-list");
@@ -163,7 +159,7 @@ function createZipHistoryItem(item, historyIndex) {
 }
 
 function render(historyToRender) {
-  historyList.innerHTML =
+  dom.historyList.innerHTML =
     !historyToRender || historyToRender.length === 0
       ? '<p class="empty-history">Nenhum item encontrado.</p>'
       : "";
@@ -172,7 +168,7 @@ function render(historyToRender) {
     const element = item.is_zip
       ? createZipHistoryItem(item, item.originalIndex)
       : createHistoryItemPreview(item, item.originalIndex);
-    historyList.appendChild(element);
+    dom.historyList.appendChild(element);
   });
 }
 
@@ -228,22 +224,19 @@ function clearAllFilters() {
   state.filters.fileType = null;
   state.searchQuery = "";
 
-  document.getElementById("history-search-input").value = "";
-  fileTypeFilter.value = "";
+  dom.historySearchInput.value = "";
+  dom.fileTypeFilter.value = "";
 
   applyFiltersAndRender();
 }
 
 export function init() {
-  const searchInput = document.getElementById("history-search-input");
-  const filterContainer = document.querySelector(".filter-container");
-
-  searchInput.addEventListener("input", (e) => {
+  dom.historySearchInput.addEventListener("input", (e) => {
     state.searchQuery = e.target.value;
     applyFiltersAndRender();
   });
 
-  filterContainer.addEventListener("click", (e) => {
+  dom.filterContainer.addEventListener("click", (e) => {
     const btn = e.target.closest(".filter-btn");
     if (!btn) return;
 
@@ -256,12 +249,12 @@ export function init() {
     }
   });
 
-  fileTypeFilter.addEventListener("change", (e) => {
+  dom.fileTypeFilter.addEventListener("change", (e) => {
     state.filters.fileType = e.target.value || null;
     applyFiltersAndRender();
   });
 
-  historyList.addEventListener("click", handleSidebarClick);
+  dom.historyList.addEventListener("click", handleSidebarClick);
 
   eventBus.on("historyUpdated", (newHistory) => {
     state.fullHistory = newHistory;

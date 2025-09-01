@@ -1,8 +1,8 @@
 import { eventBus } from "../../core/eventBus.js";
 import { regenerateResponse } from "../api.js";
 import { setLoading } from "./state.js";
+import * as dom from "./domElements.js";
 
-const contentPanel = document.getElementById("content-panel");
 let currentItem = null;
 
 function renderAnalysisDetails(item) {
@@ -33,7 +33,7 @@ function renderAnalysisDetails(item) {
       <pre id="text-view-content" class="response-text">${item.resposta_sugerida}</pre>
     </div>
     `;
-  contentPanel.innerHTML = detailsHtml;
+  dom.contentPanel.innerHTML = detailsHtml;
 }
 
 function toggleTextView() {
@@ -98,7 +98,7 @@ function handleContentClick(e) {
 export function init() {
   eventBus.on("contentUpdated", (html) => {
     currentItem = null;
-    contentPanel.innerHTML = html;
+    dom.contentPanel.innerHTML = html;
   });
 
   eventBus.on("analysisResultLoaded", renderAnalysisDetails);
@@ -113,6 +113,6 @@ export function init() {
     }
   });
 
-  contentPanel.addEventListener("click", handleContentClick);
+  dom.contentPanel.addEventListener("click", handleContentClick);
 }
 

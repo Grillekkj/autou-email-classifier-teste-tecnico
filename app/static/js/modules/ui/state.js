@@ -1,3 +1,5 @@
+import * as dom from "./domElements.js";
+
 export function setActiveItem(element) {
   document
     .querySelectorAll(
@@ -10,21 +12,21 @@ export function setActiveItem(element) {
 }
 
 export function setLoading(isLoading) {
-  const overlay = document.getElementById("global-loading-overlay");
-  if (overlay) {
-    overlay.style.display = isLoading ? "flex" : "none";
+  if (dom.globalLoadingOverlay) {
+    dom.globalLoadingOverlay.style.display = isLoading ? "flex" : "none";
   }
 
-  const analyzeButtonPage = document.getElementById("analyze-button");
-  const analyzeButtonModal = document.getElementById("modal-analyze-button");
-
-  if (analyzeButtonPage) {
-    analyzeButtonPage.disabled = isLoading;
-    analyzeButtonPage.textContent = isLoading ? "Analisando..." : "Analisar";
+  if (dom.analyzeButtonPage) {
+    dom.analyzeButtonPage.disabled = isLoading;
+    dom.analyzeButtonPage.textContent = isLoading
+      ? "Analisando..."
+      : "Analisar";
   }
-  if (analyzeButtonModal) {
-    analyzeButtonModal.disabled = isLoading;
-    analyzeButtonModal.textContent = isLoading ? "Analisando..." : "Analisar";
+  if (dom.analyzeButtonModal) {
+    dom.analyzeButtonModal.disabled = isLoading;
+    dom.analyzeButtonModal.textContent = isLoading
+      ? "Analisando..."
+      : "Analisar";
   }
 }
 

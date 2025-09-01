@@ -1,15 +1,11 @@
-const modalConfirmBtn = document.getElementById("modal-confirm-btn");
-const modalCancelBtn = document.getElementById("modal-cancel-btn");
-const modalOverlay = document.getElementById("confirmation-modal");
-const modalMessage = document.getElementById("modal-message");
-const modalTitle = document.getElementById("modal-title");
+import * as dom from "./domElements.js";
 
 let currentResolve = null;
 
 export function showConfirmationModal(title, message) {
-  modalTitle.textContent = title;
-  modalMessage.textContent = message;
-  modalOverlay.classList.add("is-visible");
+  dom.confirmationModalTitle.textContent = title;
+  dom.confirmationModalMessage.textContent = message;
+  dom.confirmationModalOverlay.classList.add("is-visible");
 
   return new Promise((resolve) => {
     currentResolve = resolve;
@@ -21,12 +17,16 @@ export function showConfirmationModal(title, message) {
       closeModal(false);
     };
 
-    modalConfirmBtn.addEventListener("click", handleConfirm, { once: true });
-    modalCancelBtn.addEventListener("click", handleCancel, { once: true });
-    modalOverlay.addEventListener(
+    dom.confirmationModalConfirmBtn.addEventListener("click", handleConfirm, {
+      once: true,
+    });
+    dom.confirmationModalCancelBtn.addEventListener("click", handleCancel, {
+      once: true,
+    });
+    dom.confirmationModalOverlay.addEventListener(
       "click",
       (e) => {
-        if (e.target === modalOverlay) {
+        if (e.target === dom.confirmationModalOverlay) {
           closeModal(false);
         }
       },
@@ -36,14 +36,10 @@ export function showConfirmationModal(title, message) {
 }
 
 function closeModal(result) {
-  modalOverlay.classList.remove("is-visible");
+  dom.confirmationModalOverlay.classList.remove("is-visible");
   if (currentResolve) {
     currentResolve(result);
     currentResolve = null;
   }
-
-  modalConfirmBtn.removeEventListener("click", () => closeModal(true));
-  modalCancelBtn.removeEventListener("click", () => closeModal(false));
-  modalOverlay.removeEventListener("click", () => closeModal(false));
 }
 

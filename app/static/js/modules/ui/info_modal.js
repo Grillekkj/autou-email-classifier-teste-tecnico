@@ -1,12 +1,9 @@
-const modalMessage = document.getElementById("info-modal-message");
-const modalTitle = document.getElementById("info-modal-title");
-const modalOverlay = document.getElementById("info-modal");
-const okBtn = document.getElementById("info-modal-ok-btn");
+import * as dom from "./domElements.js";
 
 let currentResolve = null;
 
 function closeModal() {
-  modalOverlay.classList.remove("is-visible");
+  dom.infoModalOverlay.classList.remove("is-visible");
   if (currentResolve) {
     currentResolve();
     currentResolve = null;
@@ -14,18 +11,18 @@ function closeModal() {
 }
 
 export function showInfoModal(title, message) {
-  modalTitle.textContent = title;
-  modalMessage.textContent = message;
-  modalOverlay.classList.add("is-visible");
+  dom.infoModalTitle.textContent = title;
+  dom.infoModalMessage.textContent = message;
+  dom.infoModalOverlay.classList.add("is-visible");
 
   return new Promise((resolve) => {
     currentResolve = resolve;
 
-    okBtn.addEventListener("click", closeModal, { once: true });
-    modalOverlay.addEventListener(
+    dom.infoModalOkBtn.addEventListener("click", closeModal, { once: true });
+    dom.infoModalOverlay.addEventListener(
       "click",
       (e) => {
-        if (e.target === modalOverlay) {
+        if (e.target === dom.infoModalOverlay) {
           closeModal();
         }
       },
