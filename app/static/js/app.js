@@ -1,17 +1,31 @@
 import { showConfirmationModal } from "./modules/ui/confirmation_modal.js";
-import { fetchPageContent, deleteHistoryItem } from "./modules/api.js";
 import { initializeSettingsPage } from "./modules/settings.js";
 import * as historyUI from "./modules/ui/history.js";
 import * as contentUI from "./modules/ui/content.js";
 import * as stateUI from "./modules/ui/state.js";
 import * as events from "./modules/events.js";
 import { eventBus } from "./core/eventBus.js";
+import {
+  fetchPageContent,
+  deleteHistoryItem,
+  getHistory,
+} from "./modules/api.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   const appState = {
-    currentHistory: initialHistory || [],
+    currentHistory: [],
     activeItemId: { historyId: null, subId: null },
   };
+
+  async function loadInitialHistory() {
+    stateUI.setLoading(true);
+    const data = await getHistory();
+    stateUI.setLoading(false);
+    if (data?.historico) {
+      appState.currentHistory = data.historico;
+      eventBus.emit("historyUpdated", appState.currentHistory);
+    }
+  }
 
   async function loadPage(url) {
     stateUI.setActiveItem(null);
@@ -28,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
     eventBus.emit("historyUpdated", appState.currentHistory);
 
     const newResult = appState.currentHistory[0];
-
     let itemToSelect = null;
 
     if (newResult?.is_zip && newResult.arquivos_internos.length > 0) {
@@ -133,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  function init() {
+  async function init() {
     historyUI.init(appState.currentHistory);
     contentUI.init();
 
@@ -142,6 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
     events.initializeFileUploadButton(handleAnalysisComplete);
     events.setupSidebarToggle();
 
+    await loadInitialHistory();
     loadPage("/landing");
   }
 
