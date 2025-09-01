@@ -74,8 +74,15 @@ class EmailAnalysisService:
         else:
             response_str = self.gemini_service.generate_content(prompt)
 
+        cleaned_response = response_str.strip()
+
+        if cleaned_response.startswith("```json"):
+            cleaned_response = cleaned_response[7:].strip()
+        if cleaned_response.endswith("```"):
+            cleaned_response = cleaned_response[:-3].strip()
+
         try:
-            return json.loads(response_str)
+            return json.loads(cleaned_response)
         except json.JSONDecodeError:
             return response_str
 
