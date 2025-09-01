@@ -8,13 +8,103 @@ import { appState } from "./modules/appState.js";
 import { eventBus } from "./core/eventBus.js";
 import * as api from "./modules/api.js";
 
+const itemsAreEqual = (item1, item2) =>
+  item1 &&
+  item2 &&
+  item1.timestamp === item2.timestamp &&
+  item1.assunto === item2.assunto;
+
+function findItemInNewHistory(itemData, newHistory) {
+  if (!itemData) return null;
+
+  for (let i = 0; i < newHistory.length; i++) {
+    const topLevelItem = newHistory[i];
+
+    if (itemsAreEqual(topLevelItem, itemData)) {
+      return { historyId: i, subId: null };
+    }
+
+    if (topLevelItem.is_zip) {
+      const subIndex = topLevelItem.arquivos_internos.findIndex((subItem) =>
+        itemsAreEqual(subItem, itemData)
+      );
+
+      if (subIndex !== -1) {
+        return { historyId: i, subId: subIndex };
+      }
+    }
+  }
+  return null;
+}
+
+function handleDeletedActiveItem(deletedItemIds, newHistory) {
+  if (deletedItemIds.subId !== null) {
+    const parentZipIndex = deletedItemIds.historyId;
+    const parentZip = newHistory[parentZipIndex];
+
+    if (parentZip?.is_zip && parentZip.arquivos_internos.length > 0) {
+      const element = document.querySelector(
+        `.history-item-preview[data-history-id="${parentZipIndex}"][data-sub-id="0"]`
+      );
+      if (element) {
+        const zipContainer = element.closest(".history-item-zip-container");
+        if (zipContainer && !zipContainer.classList.contains("expanded")) {
+          zipContainer.classList.add("expanded");
+          zipContainer.querySelector(".zip-file-list").style.display = "flex";
+        }
+        eventBus.emit("historyItemSelected", {
+          historyId: parentZipIndex,
+          subId: 0,
+          element,
+        });
+        return;
+      }
+    }
+  }
+
+  loadPage("/landing");
+}
+
+function handleRetainActiveItem(previouslyActiveItemData, newHistory) {
+  const newIndices = findItemInNewHistory(previouslyActiveItemData, newHistory);
+
+  if (newIndices) {
+    const selector =
+      `.history-item-preview[data-history-id="${newIndices.historyId}"]` +
+      (newIndices.subId !== null ? `[data-sub-id="${newIndices.subId}"]` : "");
+    const element = document.querySelector(selector);
+
+    if (element) {
+      stateUI.setActiveItem(element);
+      appState.setActiveItemId(newIndices.historyId, newIndices.subId);
+    } else {
+      loadPage("/landing");
+    }
+  } else {
+    loadPage("/landing");
+  }
+}
+
+function handlePostDeletionUI(
+  wasActiveItemDeleted,
+  previouslyActiveItemData,
+  deletedItemIds
+) {
+  requestAnimationFrame(() => {
+    const newHistory = appState.getHistory();
+    if (wasActiveItemDeleted) {
+      handleDeletedActiveItem(deletedItemIds, newHistory);
+    } else {
+      handleRetainActiveItem(previouslyActiveItemData, newHistory);
+    }
+  });
+}
+
 async function loadPage(url) {
   stateUI.setActiveItem(null);
   appState.clearActiveItem();
-
   const content = await api.fetchPageContent(url);
   eventBus.emit("contentUpdated", content);
-
   if (url.includes("/settings")) {
     initializeSettingsPage();
   }
@@ -24,7 +114,6 @@ async function loadInitialHistory() {
   stateUI.setLoading(true);
   const data = await api.getHistory();
   stateUI.setLoading(false);
-
   if (data?.historico) {
     appState.setHistory(data.historico);
     eventBus.emit("historyUpdated", appState.getHistory());
@@ -37,10 +126,8 @@ function handleHistorySelection({ historyId, subId, element }) {
     stateUI.setActiveItem(element);
     return;
   }
-
   appState.setActiveItemId(historyId, subId);
   const itemData = appState.findItem(historyId, subId);
-
   if (itemData) {
     eventBus.emit("analysisResultLoaded", { ...itemData, historyId, subId });
     stateUI.setActiveItem(element);
@@ -53,11 +140,9 @@ function selectFirstHistoryItem(newHistory) {
     loadPage("/landing");
     return;
   }
-
   let itemToSelect;
   let historyId = 0;
   let subId = null;
-
   if (newResult.is_zip && newResult.arquivos_internos.length > 0) {
     const zipContainer = document.querySelector(
       `.history-item-zip-container[data-history-id="0"]`
@@ -75,7 +160,6 @@ function selectFirstHistoryItem(newHistory) {
       `.history-item-preview[data-history-id="0"]`
     );
   }
-
   if (itemToSelect) {
     eventBus.emit("historyItemSelected", {
       historyId,
@@ -90,41 +174,8 @@ function selectFirstHistoryItem(newHistory) {
 function handleAnalysisComplete(data) {
   appState.setHistory(data.historico);
   eventBus.emit("historyUpdated", appState.getHistory());
-
   requestAnimationFrame(() => {
     selectFirstHistoryItem(data.historico);
-  });
-}
-
-function handlePostDeletionUI(oldHistoryId, oldSubId) {
-  if (oldSubId === null) {
-    loadPage("/landing");
-    return;
-  }
-
-  requestAnimationFrame(() => {
-    const zipContainer = document.querySelector(
-      `.history-item-zip-container[data-history-id="${oldHistoryId}"]`
-    );
-
-    if (zipContainer) {
-      const firstItem = zipContainer.querySelector(
-        '.history-item-preview[data-sub-id="0"]'
-      );
-      if (firstItem) {
-        if (!zipContainer.classList.contains("expanded")) {
-          zipContainer.classList.add("expanded");
-          zipContainer.querySelector(".zip-file-list").style.display = "flex";
-        }
-        eventBus.emit("historyItemSelected", {
-          historyId: parseInt(firstItem.dataset.historyId, 10),
-          subId: parseInt(firstItem.dataset.subId, 10),
-          element: firstItem,
-        });
-      }
-    } else {
-      loadPage("/landing");
-    }
   });
 }
 
@@ -135,21 +186,21 @@ async function handleDeleteRequest({ historyId, subId }) {
   );
   if (!confirmed) return;
 
+  const activeItemId = appState.getActiveItemId();
+  const activeItemData =
+    appState.findItem(activeItemId.historyId, activeItemId.subId) ||
+    appState.findItem(activeItemId.historyId, null);
+
   stateUI.setLoading(true);
   const result = await api.deleteHistoryItem(historyId, subId);
   stateUI.setLoading(false);
 
   if (result) {
     const wasActive =
-      appState.getActiveItemId().historyId === historyId &&
-      appState.getActiveItemId().subId === subId;
-
+      activeItemId.historyId === historyId && activeItemId.subId === subId;
     appState.setHistory(result.historico);
     eventBus.emit("historyUpdated", appState.getHistory());
-
-    if (wasActive) {
-      handlePostDeletionUI(historyId, subId);
-    }
+    handlePostDeletionUI(wasActive, activeItemData, { historyId, subId });
   }
 }
 
@@ -166,14 +217,11 @@ function registerEventListeners() {
 async function init() {
   historyUI.init();
   contentUI.init();
-
   domEvents.setupNavigation((url) => eventBus.emit("navigate", url));
   domEvents.initializeModal(handleAnalysisComplete);
   domEvents.initializeFileUploadButton(handleAnalysisComplete);
   domEvents.setupSidebarToggle();
-
   registerEventListeners();
-
   await loadInitialHistory();
   loadPage("/landing");
 }
