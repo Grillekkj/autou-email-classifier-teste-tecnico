@@ -41,11 +41,11 @@ class EmailController:
         files = request.files.getlist("email_file")
 
         if self._has_files(files):
-            results = self._process_files(files, settings)
+            results.extend(self._process_files(files, settings))
         else:
             email_text = data.get("email_text", "").strip()
             if email_text:
-                results = self._process_text_email(email_text, settings)
+                results.append(self._process_text_email(email_text, settings))
 
         if not results:
             return (
@@ -151,7 +151,7 @@ class EmailController:
         return self.processing_service.process_files(files, settings)
 
     def _process_text_email(self, text, settings):
-        return [self.processing_service.process_text_email(text, settings)]
+        return self.processing_service.process_text_email(text, settings)
 
     def _parse_int(self, value):
         try:
