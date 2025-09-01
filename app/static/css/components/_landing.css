@@ -243,3 +243,53 @@
     opacity: 1;
   }
 }
+
+.mock-history-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--card-background);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mock-history-controls input,
+.mock-history-controls select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  font-size: 0.9em;
+  box-sizing: border-box;
+}
+
+.mock-filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mock-filter-btn {
+  flex-grow: 1;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 15px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--light-text-color);
+}
+
+.mock-filter-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+.mock-filter-btn.clear {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
