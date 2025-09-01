@@ -1,3 +1,5 @@
+import { showConfirmationModal } from "./ui/confirmation_modal.js";
+
 const defaultPrompts = {
   subject: `Você é um assistente de e-mails profissionais.\nCom base no conteúdo do e-mail abaixo, gere um assunto curto e descritivo.\n\nMODO DE SAÍDA (estrito):\n- O assunto deve ter no máximo 5 palavras.\n- Retorne APENAS o texto do assunto.\n- Não adicione explicações, comentários, aspas, markdown ou qualquer outro elemento.\n\nE-mail recebido: "{email_text}"\n\nAssunto sugerido:`,
 
@@ -103,12 +105,13 @@ export function initializeSettingsPage() {
   });
 
   const resetButton = document.getElementById("reset-settings-btn");
-  resetButton.addEventListener("click", () => {
-    if (
-      confirm(
-        "Tem certeza que deseja restaurar todas as configurações para o padrão?"
-      )
-    ) {
+  resetButton.addEventListener("click", async () => {
+    const confirmed = await showConfirmationModal(
+      "Restaurar Padrões",
+      "Tem certeza que deseja restaurar todas as configurações para o padrão?"
+    );
+
+    if (confirmed) {
       localStorage.removeItem(SETTINGS_KEY);
       populateForm();
     }
