@@ -1,4 +1,19 @@
 <aside class="history-sidebar" id="history-sidebar">
+  <div class="history-controls">
+    <div class="search-container">
+      <input type="search" id="history-search-input" placeholder="Buscar no histórico..." autocomplete="off" />
+    </div>
+    <div class="filter-container">
+      <button class="filter-btn" data-filter-type="category" data-filter-value="produtivo">Produtivo</button>
+      <button class="filter-btn" data-filter-type="category" data-filter-value="improdutivo">Improdutivo</button>
+      <select class="filter-select" id="file-type-filter">
+        <option value="">Tipo de Arquivo</option>
+      </select>
+      <button class="filter-btn clear-filters" id="clear-filters-btn" style="display: none;">Limpar</button>
+    </div>
+  </div>
+  <div class="history-list" id="history-list">
+  </div>
 </aside>
 
 <template id="history-item-template">
