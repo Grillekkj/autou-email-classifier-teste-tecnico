@@ -12,6 +12,7 @@ const state = {
     category: null,
     fileType: null,
   },
+  expandedZips: new Set(),
 };
 
 function populateFileTypeFilter() {
@@ -151,7 +152,9 @@ function createZipHistoryItem(item, historyIndex) {
     subList.appendChild(subElement);
   });
 
-  if (isFilterActive) {
+  const isExpanded = isFilterActive || state.expandedZips.has(historyIndex);
+
+  if (isExpanded) {
     zipContainer.classList.add("expanded");
     subList.style.display = "flex";
   }
@@ -190,9 +193,18 @@ function handleSidebarClick(e) {
   if (zipHeader) {
     e.stopPropagation();
     const container = zipHeader.closest(".history-item-zip-container");
-    container.classList.toggle("expanded");
-    container.querySelector(".zip-file-list").style.display =
-      container.classList.contains("expanded") ? "flex" : "none";
+    const historyId = parseInt(container.dataset.historyId, 10);
+    const isExpanded = container.classList.toggle("expanded");
+
+    if (isExpanded) {
+      state.expandedZips.add(historyId);
+    } else {
+      state.expandedZips.delete(historyId);
+    }
+
+    container.querySelector(".zip-file-list").style.display = isExpanded
+      ? "flex"
+      : "none";
     return;
   }
 
@@ -253,6 +265,13 @@ export function init() {
 
   eventBus.on("historyUpdated", (newHistory) => {
     state.fullHistory = newHistory;
+    const existingIds = new Set(newHistory.map((_, i) => i));
+    state.expandedZips.forEach((id) => {
+      if (!existingIds.has(id)) {
+        state.expandedZips.delete(id);
+      }
+    });
+
     populateFileTypeFilter();
     applyFiltersAndRender();
   });
