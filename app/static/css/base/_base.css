@@ -46,7 +46,8 @@ select {
 
 .email-client-container {
   display: flex;
-  height: calc(100vh - 65px);
+  flex: 1;
+  min-height: 0;
   width: 100%;
 }
 
