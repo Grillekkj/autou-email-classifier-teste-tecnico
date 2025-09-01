@@ -3,6 +3,42 @@
   margin: 0 auto;
 }
 
+.tabs-container {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 30px;
+}
+
+.tab-link {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--light-text-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-link:hover {
+  color: var(--text-color);
+}
+
+.tab-link.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 .settings-section {
   background-color: var(--card-background);
   border: 1px solid var(--border-color);
