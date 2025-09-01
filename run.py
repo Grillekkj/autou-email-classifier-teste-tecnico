@@ -42,7 +42,7 @@ if __name__ == "__main__":
                 "-m",
                 "gunicorn",
                 "-w",
-                "8",
+                "1",
                 "-b",
                 f"0.0.0.0:{port}",
                 "app:create_app()",
