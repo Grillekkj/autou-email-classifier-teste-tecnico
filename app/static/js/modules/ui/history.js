@@ -28,10 +28,12 @@ function populateFileTypeFilter() {
     fileTypeFilter.remove(1);
   }
 
-  [...fileTypes].sort().forEach((type) => {
-    const option = new Option(type.toUpperCase(), type);
-    fileTypeFilter.add(option);
-  });
+  [...fileTypes]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((type) => {
+      const option = new Option(type.toUpperCase(), type);
+      fileTypeFilter.add(option);
+    });
 }
 
 function applyFiltersAndRender() {
