@@ -1,3 +1,7 @@
+.settings-header {
+  text-align: center;
+}
+
 .settings-main {
   max-width: 900px;
   margin: 0 auto;
@@ -153,16 +157,11 @@
   transition: opacity 0.3s;
 }
 
-.settings-title-container {
-  display: flex;
-  align-items: baseline;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
 .save-reminder {
   font-size: 1rem;
   font-weight: 400;
   color: var(--light-text-color);
   font-style: italic;
+  display: block;
+  margin-bottom: 15px;
 }
