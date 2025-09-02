@@ -26,9 +26,10 @@ Este projeto foi desenhado para ser um assistente de e-mail poderoso e intuitivo
 
 ## Demonstração em Vídeo
 
+<img width="1002" height="437" alt="image" src="https://github.com/user-attachments/assets/c9fe0964-5a2d-40aa-8c99-12e359db34ff" />
 👉 Assista ao vídeo de demonstração no link abaixo:
 
-[![Demo do InboxFlow](https://img.youtube.com/vi/LGKF7KLpoJc/maxresdefault.jpg)](https://www.youtube.com/watch?v=LGKF7KLpoJc)
+[Demo do InboxFlow](https://www.youtube.com/watch?v=LGKF7KLpoJc)
 
 ## Tecnologias Utilizadas
 
@@ -165,3 +166,4 @@ autou-email-classifier-teste-tecnico/
 
 🔗 Live Demo: [https://autou-email-classifier-teste-tecnico.onrender.com/](https://autou-email-classifier-teste-tecnico.onrender.com/)  
 ⚠️ *Nota: pode ser necessário esperar entre **1-2 minutos** para o serviço no Render iniciar, caso esteja inativo por muito tempo.*
+
